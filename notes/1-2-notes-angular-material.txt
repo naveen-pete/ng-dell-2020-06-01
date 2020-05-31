@@ -1,0 +1,284 @@
+Angular Material - 2
+--------------------
+(Side and Top navigation, Home)
+
+1. Add Sidenav
+  - Material Module
+    - Import MatSideNavModule
+
+    <mat-sidenav-container>
+      <mat-sidenav #sidenav>
+        <p>Fitness App Sidenav</p>
+      </mat-sidenav>
+      <mat-sidenav-content>
+        <button (click)="sidenav.toggle()">Show Sidenav</button>
+        <main>
+          <router-outlet></router-outlet>
+        </main>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+
+----------------------------------
+2. Add Toolbar
+  - Material Module
+    - Import MatToolbarModule
+    
+    <mat-toolbar color="primary">
+      <div><button (click)="sidenav.toggle()">Toggle Sidenav</button></div>
+      <div>Fitness App</div>
+      <div>
+        <a routerLink="/training">Training</a>
+        <a routerLink="/login">Login</a>
+        <a routerLink="/signup">Signup</a>
+      </div>
+    </mat-toolbar>
+  
+  - CSS
+    - app.component.css
+    
+        mat-sidenav-container, mat-sidenav-content, mat-sidenav {
+          height: 100%;
+        }
+
+        mat-sidenav {
+          width: 250px;
+        }
+
+----------------------------------
+3. Styling Toolbar and Items
+
+  - Toolbar button with menu icon
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+  - Alignment
+  
+      <div fxFlex fxLayout fxLayoutAlign="flex-end">
+        <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+          <li>
+            <a routerLink="/training">Training</a>
+          </li>
+          <li>
+            <a routerLink="/login">Login</a>
+          </li>
+          <li>
+            <a routerLink="/signup">Signup</a>
+          </li>
+        </ul>
+      </div>
+
+  - CSS
+  
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      a:hover,
+      a:active {
+        color: lightgray;
+      }
+
+      .navigation-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+----------------------------------
+4. Making Toolbar Items Responsive
+  
+  - Show menu button only for extra small screens
+    <div fxHide.gt-xs>
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+  
+  - Hide menu items for extra small screens`
+    <div fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
+      <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+        ...
+      </ul>
+    </div>
+
+----------------------------------
+5. Add Navigation List
+  - Material Module
+    - Import MatListModule
+    
+  - Use <mat-nav-list> component
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="/training"> Training </a>
+      <a mat-list-item routerLink="/login"> Login </a>
+      <a mat-list-item routerLink="/signup"> Signup </a>
+    </mat-nav-list>
+
+  - Improve: List items with icons
+  
+    <mat-nav-list>
+      <a mat-list-item routerLink="/signup" (click)="sidenav.close()">
+        <mat-icon>face</mat-icon>
+        <span class="nav-caption">Signup</span>
+      </a>
+      <a mat-list-item routerLink="/login" (click)="sidenav.close()">
+        <mat-icon>input</mat-icon>
+        <span class="nav-caption">Login</span>
+      </a>
+      <a mat-list-item routerLink="/training" (click)="sidenav.close()">
+        <mat-icon>fitness_center</mat-icon>
+        <span class="nav-caption">Training</span>
+      </a>
+    </mat-nav-list>
+    
+  - CSS
+  
+    .nav-caption {
+      display: inline-block;
+      padding-left: 6px;
+    }
+
+----------------------------------
+6. Logout menu item
+
+  - Toolbar
+  
+    <li>
+      <a style="cursor: pointer">Logout</a>
+    </li>
+
+  - Sidenav Menu
+  
+    <mat-list-item>
+      <button mat-icon-button (click)="sidenav.close()">
+        <mat-icon>eject</mat-icon>
+        <span class="nav-caption">Logout</span>
+      </button>
+    </mat-list-item>
+
+----------------------------------
+7. Refactoring Toolbar into Header component
+
+  - Create Header component
+    - ng g c navigation/header --module app.module
+    
+  - Move <mat-toolbar>...</mat-toolbar> from app.component.html into header.component.html
+  
+  - Move following stylesheet from app.component.css into header.component.css
+  
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      a:hover,
+      a:active {
+        color: lightgray;
+      }
+
+      .navigation-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+  - Include a custom event to toggle sidenav
+    
+      @Output() sidenavToggle = new EventEmitter<void>();
+    
+  - Include a click event handler to emit the above custom event
+
+      onToggleSidenav() {
+        this.sidenavToggle.emit();
+      }
+
+  - Bind the menu button click event to the above event handler
+  
+      <button mat-icon-button (click)="onToggleSidenav()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    
+
+----------------------------------
+8. Refactoring Sidenav Menu into Sidenav List component
+
+  - Create Header component
+    - ng g c navigation/sidenav-list --module app.module
+
+  - Move <mat-nav-list>...</mat-nav-list> from app.component.html into sidenav-list.component.html
+  
+  - Move following stylesheet from app.component.css into sidenav-list.component.css
+  
+      .nav-caption {
+        display: inline-block;
+        padding-left: 6px;
+      }
+
+  - Include a custom event to close sidenav
+    
+      @Output() closeSidenav = new EventEmitter<void>();
+    
+  - Include a click event handler to emit the above custom event
+
+      onClose() {
+        this.closeSidenav.emit();
+      }
+
+  - Bind the menu item click event (Training, Login, Signup and Logout) to the above event handler 
+  
+      <a mat-list-item routerLink="/signup" (click)="onClose()">
+        <mat-icon>face</mat-icon>
+        <span class="nav-caption">Signup</span>
+      </a>
+
+----------------------------------
+9. Update app.component.html
+
+  - Include references to SidenavListComponent and HeaderComponent
+  
+      <mat-sidenav-container>
+        <mat-sidenav #sidenav role="navigation">
+          <app-sidenav-list (closeSidenav)="sidenav.close()"></app-sidenav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+          <app-header (sidenavToggle)="sidenav.toggle()"></app-header>
+          <main>
+            <router-outlet></router-outlet>
+          </main>
+        </mat-sidenav-content>
+      </mat-sidenav-container>    
+    
+----------------------------------
+10. Home (Welcome) component
+
+  - Include this content
+  
+    <div class="welcome">
+      <section>
+        <h1>ACTIVITY</h1>
+        <p>Stay active and enjoy better health and more fun!</p>
+      </section>
+      <section>
+        <h1>COMMUNITY</h1>
+        <p>Get to know other people who share your passion!</p>
+      </section>
+      <section>
+        <h1>CHALLENGES</h1>
+        <p>Never stop! Dive into new challenges every day</p>
+      </section>
+    </div>
+    
+  - CSS
+  
+      .welcome {
+        text-align: center;
+      }
+
+  - Make it responsive
+    - center align it for both main and cross axes (fxLayoutAlign="center center")
+    - default layout - column (fxLayout="column")
+    - for bigger screens
+      - change layout to row (fxLayout.gt-sm="row")
+      - provide a gap of 20px (fxLayoutGap.gt-sm="20px")

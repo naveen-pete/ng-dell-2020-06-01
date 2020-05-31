@@ -1,0 +1,237 @@
+Angular Material - 1
+--------------------
+(Signup, Login, Routing)
+
+1. Getting Started
+  - https://material.angular.io/guide/getting-started
+
+  - Check v7.3.7 Getting Started as well
+    - https://v7.material.angular.io/guide/getting-started
+
+  - GitHub Repo
+    - https://github.com/angular/components
+
+---------------------
+2. Fitness App
+  - Create an Angular App. Name it 'fitness-app'
+    - ng new fitness-app
+
+---------------------
+3. Install Angular Material
+  - Run following command within the Angular project (fitness-app) folder
+    - ng add @angular/material
+    
+  - Create a separate NgModule that imports all of the Angular Material components that you will use in your application. Name it as MaterialModule (material.module.ts). Import MaterialModule within AppModule
+    
+  - Ensure index.html has following references within <head> tag
+    - Roboto Font
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+      
+    - Material Icons
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  - Global styles.css should contain following stylesheets
+
+      html, body { height: 100%; }
+      body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+---------------------
+4. Signup and Login components
+  - Create following components
+    - ng g c auth/signup --module app.module
+    - ng g c auth/login --module app.module
+
+---------------------
+5. How to use an Angular Material component?
+  - Material Module
+    - Import MatButtonModule and MatIconModule
+
+  - Button
+    <button mat-button>Basic</button>
+    <button mat-stroked-button>Basic</button>
+    <button mat-button color="primary">Primary</button>
+
+  - Icon
+      <mat-icon>home</mat-icon>
+    
+  - Button with Icon
+      <button mat-fab color="primary" aria-label="Example icon button with a delete icon">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+---------------------
+6. Signup component
+  - Material Module
+    - Import MatFormFieldModule and MatInputModule
+
+  - Form Field component
+    - <mat-form-field>
+    
+  - Input directive
+    - matInput
+
+      <section>
+        <form>
+          <mat-form-field>
+          <mat-label>Email</mat-label>
+            <input type="email" matInput placeholder="enter email">
+          </mat-form-field>
+
+          <mat-form-field>
+          <mat-label>Password</mat-label>
+            <input type="password" matInput placeholder="enter password" autocomplete="off">
+          </mat-form-field>
+        
+          <button type="submit" mat-raised-button color="primary">Submit</button>
+        </form>
+      </section>
+
+---------------------
+7. Angular Flex Layout Package
+  - npm i @angular/flex-layout
+
+  - App Module
+
+      import { FlexLayoutModule } from '@angular/flex-layout';
+      
+      @NgModule({
+        imports: [ FlexLayoutModule ]
+      })
+      export class AppModule {}
+    
+  - Signup component
+
+      <form fxLayout="column" fxLayoutAlign="center center">
+        ...
+      </form>
+
+  - css
+
+      mat-form-field {
+        width: 300px;
+      }
+
+---------------------
+8. Add Submit button
+
+    <form  #f="ngForm" (ngSubmit)="onSubmit(f)">
+      ...
+      <input ngModel name="email" />
+      <input ngModel name="password" />
+      
+      <button type="submit" mat-raised-button color="primary">Submit</button>
+    </form>
+
+---------------------
+9. Add form validation
+  - Email field - required, email
+  - Password field - required, minlength=6
+
+  - Error message
+    - <mat-error>
+
+        <mat-error *ngIf="emailInput.hasError('required')">Field must not be empty.</mat-error>
+        <mat-error *ngIf="!emailInput.hasError('required')">E-Mail is invalid.</mat-error>
+
+
+  - Hint label
+    - <mat-hint>
+    
+    <mat-form-field hintLabel="Should be at least 6 characters long.">
+      <input type="password" autocomplete="off" matInput placeholder="Your password" ngModel name="password" required
+      minlength="6" #pwInput="ngModel">
+      <mat-hint align="end">{{ pwInput.value?.length }} / 6</mat-hint>
+      <mat-error>Has to be at least 6 characters long.</mat-error>
+    </mat-form-field>
+  
+---------------------
+10. Add Date Picker
+
+  - Material Module
+    - Import MatDatepickerModule and MatNativeDateModule
+    
+  - Signup component HTML
+      <mat-form-field>
+        <input matInput placeholder="Your birthdate" [matDatepicker]="picker" 
+        [max]="maxDate" ngModel name="birthdate" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+  - Signup component TS
+      ngOnInit() {
+        this.maxDate = new Date();
+        this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
+      }
+
+---------------------
+11. Add Checkbox
+
+  - Material Module
+    - Import MatCheckboxModule
+
+  - Signup component HTML
+      <mat-checkbox ngModel name="agree" required color="primary">Agree to Terms and Conditions.</mat-checkbox>
+
+---------------------
+12. Finish the form
+  - Add spacing between form controls using fxLayoutGap directive
+
+      <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
+        ...
+      </form>
+
+  - Enable submit button only if form is valid.
+
+      <button type="submit" mat-raised-button color="primary" [disabled]="f.invalid">Submit</button>
+  
+---------------------
+13. Login component
+  - Add an email and password field using Material components
+  - Add validation - 
+      - Email - required, email
+      - Password - required
+  - Show errors and hints
+  - Handle form submit event
+  - Disable submit button if form is invalid
+  - Use Reactive forms
+
+---------------------
+14. Add Routing
+  - Add new components to the app
+    - ng g c home (or welcome) --module app.module
+    - ng g c training --module app.module
+    - ng g c training/current-training --module app.module
+    - ng g c training/new-training --module app.module
+    - ng g c training/past-trainings --module app.module
+
+  - Create routing module for the app
+    - Name: app-routing.module.ts
+    - Define routes
+      - path: '', component: HomeComponent
+      - path: 'signup', component: SignupComponent
+      - path: 'login', component: LoginComponent
+      - path: 'training', component: TrainingComponent
+     
+    - Register the routes and export RouterModule
+
+  - Import Routing module in App Module
+
+  - Modify app component HTML
+    - Include <router-outlet></router-outlet> directive
+
+---------------------
+15. Links
+  - Angular Material
+    - https://material.angular.io/
+    - https://material.angular.io/components/categories
+
+  - A Complete Guide to Flexbox
+    - https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+    
+  - CSS Flexbox Tutorial for Beginners
+    - https://youtu.be/siKKg8Y_tQY
+    - https://youtu.be/RdlEEfx912M
+  
+  - Angular Flex-Layout
+    - https://github.com/angular/flex-layout
