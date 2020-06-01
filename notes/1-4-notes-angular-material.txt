@@ -1,0 +1,219 @@
+Angular Material - 4
+--------------------
+(Authentication, Update Header and Sidenav menu options, Routing, Route Protection)
+
+1. Auth folder 
+  
+  - Create User and AuthData models (interfaces)
+
+  - Filename - user.model.ts
+      
+      export interface User {
+        email: string;
+        userId: string;
+      }
+      
+  - Filename - auth-data.model.ts
+      
+      export interface AuthData {
+        email: string;
+        password: string;
+      }
+
+--------------------------------------------------
+2. Auth Service
+
+  - Create a service - auth.service.ts
+  
+      export class AuthService {
+        private user: User;
+
+        registerUser(authData: AuthData) {
+          this.user = {
+            email: authData.email,
+            userId: Date.now()
+          };
+        }
+
+        login(authData: AuthData) {
+          this.user = {
+            email: authData.email,
+            userId: Date.now()
+          };
+        }
+
+        logout() {
+          this.user = null
+        }
+
+        isAuth() {
+          return this.user != null;
+        }
+      }
+      
+  - App Module
+    - Add AuthService to providers[] array
+
+--------------------------------------------------
+3. Signup Component
+
+  - Inject AuthService into the constructor
+  
+  - Update onSubmit() event handler to call authService.registerUser() method
+  
+      onSubmit(form: NgForm) {
+        this.authService.registerUser({
+          email: form.value.email,
+          password: form.value.password
+        });
+      }
+  
+--------------------------------------------------
+4. Login Component
+
+  - Inject AuthService into the constructor
+  
+  - Update onSubmit() event handler to call authService.login() method
+
+      onSubmit() {
+        this.authService.login({
+          email: this.loginForm.value.email,
+          password: this.loginForm.value.password
+        });
+      }
+
+--------------------------------------------------
+5. Auth Service Event
+
+  - Introduce authChange event
+    
+      authChange = new Subject<boolean>();
+      
+  - Update registerUser() and login() methods to emit 'true'
+  
+      this.authChange.next(true);
+      
+  - Update logout() method to emit 'false';
+  
+      this.authChange.next(true);
+      
+--------------------------------------------------
+6. Header Component
+
+  - header.component.ts
+
+    - Add isAuth property with 'false' value
+
+    - Add authSubscription property to store the event subscription
+    
+    - Inject AuthService into the constructor
+    
+    - Subscribe to authService.authChange event in ngOnInit() method
+    
+        ngOnInit() {
+          this.authSubscription = this.authService.authChange.subscribe(authStatus => {
+            this.isAuth = authStatus;
+          });
+        }
+
+    - Release subscription in ngOnInit() method
+    
+        ngOnDestroy() {
+          this.authSubscription.unsubscribe();
+        }
+
+  - header.component.html
+  
+    - Show Training and Logout links only when isAuth is true
+    - Show Login and Signup links only when isAuth is false
+    
+--------------------------------------------------
+7. Sidenav List Component
+
+  - sidenav-list.component.ts
+
+    - Add isAuth property with 'false' value
+
+    - Add authSubscription property to store the event subscription
+    
+    - Inject AuthService into the constructor
+    
+    - Subscribe to authService.authChange event in ngOnInit() method
+    
+        ngOnInit() {
+          this.authSubscription = this.authService.authChange.subscribe(authStatus => {
+            this.isAuth = authStatus;
+          });
+        }
+
+    - Release subscription in ngOnInit() method
+    
+        ngOnDestroy() {
+          this.authSubscription.unsubscribe();
+        }
+
+  - sidenav-list.component.html
+  
+    - Show Training and Logout links only when isAuth is true
+    - Show Login and Signup links only when isAuth is false
+
+--------------------------------------------------
+8. Routing
+  
+  - Auth Service
+  
+    - Inject Router into the constructor
+    
+    - Update registerUser() and login() methods to include:
+    
+        this.router.navigate(['/training']);
+        
+    - Update logout() method to include:
+        
+        this.router.navigate(['/login']);
+
+-------------------------------------------------     
+9. Logout
+
+  - Header component
+
+    - Add onLogout() event handler for logout click event
+    
+        onLogout() {
+          this.authService.logout();
+        }
+        
+  - Sidenav List component
+  
+    - Rename onClose() method to onLogout()
+    
+        onLogout() {
+          this.onClose();
+          this.authService.logout();
+        }
+
+-------------------------------------------------     
+10. Route Protection
+
+  - Create a file auth.guard.ts within auth folder
+  
+  - Create AuthGuard class, implement CanActivate interface
+  
+  - Inject AuthService and Router into the constructor
+  
+  - Implement canActivate method:
+  
+      if (this.authService.isAuth()) {
+        return true;
+      } else {
+        this.router.navigate(['/login']);
+        return false;
+      }
+
+  - app-routing.module.ts
+  
+    - For 'training' route, include canActivate property with AuthGuard
+
+        { path: 'training', component: TrainingComponent, canActivate: [AuthGuard] }
+        
+    - Add AuthGuard to providers[] array

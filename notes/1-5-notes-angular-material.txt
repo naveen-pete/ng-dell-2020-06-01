@@ -1,0 +1,235 @@
+Angular Material - 5
+--------------------
+(Exercises, Training Service, Active Exercise)
+
+1. Training folder
+
+  - Create Exercise model
+  
+    - Filename - exercise.model.ts
+    
+        export interface Exercise {
+          id: string;
+          name: string;
+          duration: number;
+          calories: number;
+          date?: Date;
+          state?: 'completed' | 'cancelled' | null;
+        }
+
+-----------------------------------------------------
+2. Training service
+
+  - Create a file for the service - training.service.ts
+    - Add availableExercises property
+    
+        private availableExercises: Exercise[] = [
+          { id: 'crunches', name: 'Crunches', duration: 30, calories: 8 },
+          { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 15 },
+          { id: 'side-lunges', name: 'Side Lunges', duration: 120, calories: 18 },
+          { id: 'burpees', name: 'Burpees', duration: 60, calories: 8 }
+        ];
+        
+    - Add runningExercise property
+    
+        private runningExercise: Exercise;
+        
+    - Add getAvailableExercises() method
+    
+        getAvailableExercises() {
+          return [ ...this.availableExercises ];
+        }
+        
+    - Add startExercise() method
+    
+        startExercise(exerciseId: string) {
+          this.runningExercise = this.availableExercises.find(ex => ex.id === exerciseId);
+        }
+        
+    - Add getRunningExercise() method
+    
+        getRunningExercise() {
+          return { ...this.runningExercise };
+        }
+
+  - App Module 
+    - Add TrainingService to providers[] array
+
+-----------------------------------------------------
+3. New Training component
+
+  - Add exercises (type - Exercise[]) property
+
+  - Inject TrainingService into constructor
+  
+  - Implement ngOnInit() method
+  
+      ngOnInit() {
+        this.exercises = this.trainingService.getAvailableExercises()
+      }
+      
+  - new-training.component.html
+    - Update template to generate <option> tags for <select> drop down
+    
+        <mat-select placeholder="Choose Exercise" ngModel name="exercise" required>
+          <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
+            {{ exercise.name }}
+          </mat-option>
+        </mat-select>
+
+-----------------------------------------------------
+4. Managing Active Exercise
+
+  - Training Service
+  
+    - Add exerciseChanged property 
+
+        exerciseChanged = new Subject<Exercise>();
+
+    - Update startExercise() method to emit the selected exercise
+    
+        startExercise(selectedId: string) {
+          this.runningExercise = this.availableExercises.find(
+            ex => ex.id === selectedId
+          );
+          this.exerciseChanged.next({ ...this.runningExercise });
+        }
+
+  - Training Component
+  
+    - Add a subscription property - exerciseSubscription
+    
+    - Inject TrainingService into the constructor
+    
+    - Implement ngOnInit() method, subscribe to TrainingService.exerciseChanged event
+    
+        ngOnInit() {
+          this.exerciseSubscription = this.trainingService.exerciseChanged.subscribe(
+            exercise => {
+              if (exercise) {
+                this.ongoingTraining = true;
+              } else {
+                this.ongoingTraining = false;
+              }
+            }
+          );
+        }
+
+    - Implement ngOnDestroy() method, release the subscription
+    
+        ngOnDestroy() {
+          if (this.exerciseSubscription) {
+            this.exerciseSubscription.unsubscribe();
+          }
+        }
+
+  - New Training Component
+  
+    - new-training.component.html
+      - Add <form> to the template
+      - Create template variable for the form
+      - Handle ngSubmit event and pass form template variable to the event handler (onStartTraining())
+      - Make sure the <select> has ngModel directive and has a name attribute
+      - Apply required validator
+      - Disable submit button if the form is invalid
+      
+      - Remove EventEmitter property if present
+      - Remove event subscription from the parent component as well (TrainingComponent)
+      
+    - new-training.component.ts
+      - Update onStartTraining() event handler to call TrainingService.startExercise() method
+      
+          onStartTraining(form: NgForm) {
+            this.trainingService.startExercise(form.value.exercise);
+          }
+
+-----------------------------------------------------
+5. Current Training Component
+
+  - Inject TrainingService into the constructor
+  
+  - Update startOrResumeTimer() method to consider the duration of current exercise
+
+      startOrResumeTimer() {
+        const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
+
+        this.timer = window.setInterval(() => {
+          this.progress = this.progress + 1;
+          if (this.progress >= 100) {
+            clearInterval(this.timer);
+          }
+        }, step);
+      }
+      
+  - Remove EventEmitter property if present
+  - Remove event subscription from the parent component as well (TrainingComponent)
+
+-----------------------------------------------------
+6. Handling Cancel and Complete Exercise
+
+  - Training Service
+  
+    - Add exercises property
+    
+        private exercises: Exercise[] = [];
+    
+    - Add completeExercise() method
+    
+        completeExercise() {
+          this.exercises.push({
+            ...this.runningExercise,
+            date: new Date(),
+            state: 'completed'
+          });
+          this.runningExercise = null;
+          this.exerciseChanged.next(null);
+        }
+
+    - Add cancelExercise() method
+    
+        cancelExercise(progress: number) {
+          this.exercises.push({
+            ...this.runningExercise,
+            duration: this.runningExercise.duration * (progress / 100),
+            calories: this.runningExercise.calories * (progress / 100),
+            date: new Date(),
+            state: 'cancelled'
+          });
+          this.runningExercise = null;
+          this.exerciseChanged.next(null);
+        }
+
+  - Current Training Component
+  
+    - Update startOrResumeTimer() to call TrainingService.completeExercise()
+    
+        startOrResumeTimer() {
+          const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
+
+          this.timer = window.setInterval(() => {
+            this.progress = this.progress + 1;
+            if (this.progress >= 100) {
+              this.trainingService.completeExercise();
+              clearInterval(this.timer);
+            }
+          }, step);
+        }
+
+    - Update onStop() method to call TrainingService.cancelExercise()
+    
+        onStop() {
+          clearInterval(this.timer);
+          const dialogRef = this.dialog.open(StopTrainingComponent, {
+            data: {
+              progress: this.progress
+            }
+          });
+
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.trainingService.cancelExercise(this.progress);
+            } else {
+              this.startOrResumeTimer();
+            }
+          });
+        }
