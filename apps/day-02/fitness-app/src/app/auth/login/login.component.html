@@ -1,15 +1,27 @@
 <section>
-  <form>
-    <div>
-      <label for="email">Email</label>
-      <input type="text" id="email" name="email" placeholder="enter email">
-    </div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
 
-    <div>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="enter password">
-    </div>
+    <h2>Login</h2>
 
-    <button type="submit">Login</button>
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput type="text" name="email" placeholder="enter email" formControlName="email">
+      <mat-hint>Your email</mat-hint>
+      <mat-error>Email is required</mat-error>
+      <mat-error>Email is invalid</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" name="password" placeholder="enter password" autocomplete="false"
+        formControlName="password">
+      <mat-hint>Your password</mat-hint>
+      <mat-error>Password is required</mat-error>
+    </mat-form-field>
+
+    <button mat-fab color="primary" type="submit" [disabled]="form.invalid">
+      <mat-icon>login</mat-icon>
+    </button>
+
   </form>
 </section>

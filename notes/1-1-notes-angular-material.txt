@@ -150,6 +150,9 @@ Angular Material - 1
   - Material Module
     - Import MatDatepickerModule and MatNativeDateModule
     
+        import { MatDatepickerModule } from '@angular/material/datepicker';
+        import { MatNativeDateModule } from '@angular/material/core';
+    
   - Signup component HTML
       <mat-form-field>
         <input matInput placeholder="Your birthdate" [matDatepicker]="picker" 
