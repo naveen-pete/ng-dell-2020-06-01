@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+import { AppValidators } from '../../common/app-validators';
 
 @Component({
   selector: 'app-signup',
@@ -8,28 +10,47 @@ import { NgForm } from '@angular/forms';
 })
 export class SignupComponent implements OnInit {
   maxDate: Date;
+  form: FormGroup;
 
   constructor() { }
 
   ngOnInit(): void {
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
+
+    this.buildForm();
   }
 
-  onSubmit(form: NgForm) {
-    console.log('form:', form.value);
+  private buildForm() {
+    this.form = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email, AppValidators.isEmailTakenSync]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      birthdate: new FormControl('', Validators.required),
+      agree: new FormControl(false, [Validators.requiredTrue])
+    });
   }
 
-  // getError(input) {
-  //   if (input.hasError('required')) {
-  //     return 'getError() Email is required';
-  //   }
+  onSubmit() {
+    if (this.form.invalid) {
+      return;
+    }
 
-  //   if (input.hasError('email')) {
-  //     return 'getError() Email is invalid';
-  //   }
+    console.log('form value:', this.form.value);
+  }
 
-  //   return '';
-  // }
+  get email() {
+    return this.form.get('email');
+  }
 
+  get password() {
+    return this.form.get('password');
+  }
+
+  get birthdate() {
+    return this.form.get('birthdate');
+  }
+
+  get agree() {
+    return this.form.get('agree');
+  }
 }
