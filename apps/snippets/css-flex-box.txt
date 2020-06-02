@@ -1,0 +1,55 @@
+HTML
+----
+<div id="container">
+  <div id="child1" class="child">
+    <h3>Child 1</h3>
+  </div>
+  <div id="child2" class="child">
+    <h3>Child 2</h3>
+  </div>
+  <div id="child3" class="child">
+    <h3>Child 3</h3>
+  </div>
+</div>
+
+------------------------------------------
+- container css properties
+    display: flex;
+    flex-direction: row;      // main axis
+    justify-content: center;  // alignment along main axis ( flex-start | flex-end )
+    align-items: center;      // alignment along cross axis ( flex-start | flex-end )
+  
+- child css properties
+    flex: 1;
+
+------------------------------------------
+CSS
+---
+#container {
+  margin: 5px;
+  padding: 5px;
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  background-color: lightgray;
+}
+
+.child {
+  margin: 5px;
+  padding: 5px;
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+}
+
+#child1 {
+  background-color: red;  
+}
+
+#child2 {
+  background-color: blue;
+}
+
+#child3 {
+  background-color: green;
+}
