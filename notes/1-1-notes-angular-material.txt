@@ -238,3 +238,10 @@ Angular Material - 1
   
   - Angular Flex-Layout
     - https://github.com/angular/flex-layout
+    
+  - Angular Forms
+    - Introduction to forms in Angular
+      - https://angular.io/guide/forms-overview
+      
+    - Validating form input
+      - https://angular.io/guide/form-validation
