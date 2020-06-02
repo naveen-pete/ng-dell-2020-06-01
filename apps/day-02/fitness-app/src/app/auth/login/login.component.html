@@ -7,8 +7,8 @@
       <mat-label>Email</mat-label>
       <input matInput type="text" name="email" placeholder="enter email" formControlName="email">
       <mat-hint>Your email</mat-hint>
-      <mat-error>Email is required</mat-error>
-      <mat-error>Email is invalid</mat-error>
+      <mat-error *ngIf="email.hasError('required')">Email is required</mat-error>
+      <mat-error *ngIf="email.hasError('email')">Email is invalid</mat-error>
     </mat-form-field>
 
     <mat-form-field>
@@ -19,7 +19,7 @@
       <mat-error>Password is required</mat-error>
     </mat-form-field>
 
-    <button mat-fab color="primary" type="submit" [disabled]="form.invalid">
+    <button mat-mini-fab color="primary" type="submit" [disabled]="form.invalid">
       <mat-icon>login</mat-icon>
     </button>
 

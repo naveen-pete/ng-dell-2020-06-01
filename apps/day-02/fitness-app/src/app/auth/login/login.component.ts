@@ -26,4 +26,12 @@ export class LoginComponent implements OnInit {
     console.log('form value:', this.form.value);
   }
 
+  get email() {
+    return this.form.get('email');
+  }
+
+  get password() {
+    return this.form.get('password');
+  }
+
 }
