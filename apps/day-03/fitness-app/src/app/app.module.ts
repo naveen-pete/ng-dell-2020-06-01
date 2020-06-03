@@ -19,6 +19,8 @@ import { StopTrainingComponent } from './training/stop-training/stop-training.co
 
 import { MaterialModule } from './material.module';
 import { AppRoutingModule } from './app-routing.module';
+import { HeaderComponent } from './navigation/header/header.component';
+import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { AppRoutingModule } from './app-routing.module';
     CurrentTrainingComponent,
     NewTrainingComponent,
     PastTrainingsComponent,
-    StopTrainingComponent
+    StopTrainingComponent,
+    HeaderComponent,
+    SidenavListComponent
   ],
   imports: [
     BrowserModule,
