@@ -215,6 +215,7 @@ Angular Material - 1
     - ng g c training/current-training --module app.module
     - ng g c training/new-training --module app.module
     - ng g c training/past-trainings --module app.module
+    - ng g c training/stop-training --module app.module
 
   - Create routing module for the app
     - Name: app-routing.module.ts

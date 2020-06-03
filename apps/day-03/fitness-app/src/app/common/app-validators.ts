@@ -14,6 +14,7 @@ export class AppValidators {
   static isEmailTakenAsync(
     control: AbstractControl
   ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> {
+    // return this.http.get('rest-api-url');
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (control.value === 'naveen@abc.com') {

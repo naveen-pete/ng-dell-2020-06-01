@@ -23,7 +23,7 @@ export class SignupComponent implements OnInit {
 
   private buildForm() {
     this.form = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email, AppValidators.isEmailTakenSync]),
+      email: new FormControl('', [Validators.required, Validators.email], AppValidators.isEmailTakenAsync),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       birthdate: new FormControl('', Validators.required),
       agree: new FormControl(false, [Validators.requiredTrue])

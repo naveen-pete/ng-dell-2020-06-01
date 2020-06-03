@@ -46,6 +46,19 @@ Links
 
 - Introduction to services and dependency injection
   - https://angular.io/guide/architecture-services
+  
+- Promises
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+  
+- Observables
+  - Introduction
+    - http://reactivex.io/intro.html
+  
+  - Observables Overview
+    - https://angular.io/guide/observables
+  
+  - Observables compared to other techniques
+    - https://angular.io/guide/comparing-observables
 
 -------------------------------------------------------------
 - Angular Material
