@@ -1,0 +1,126 @@
+Angular Material - 6
+--------------------
+(Past Trainings)
+
+1. Training Service
+  
+  - Add getCompletedOrCancelledExercises() method
+  
+      getCompletedOrCancelledExercises() {
+        return [ ...this.exercises ];
+      }
+
+--------------------------------------------
+2. Past Trainings Component
+
+  - Material Module
+  
+    - Import MatTableModule and add it to exports array
+    
+        import {MatTableModule} from '@angular/material/table';
+        
+  - past-trainings.component.ts
+  
+    - Add these imports
+    
+        import { MatTableDataSource } from '@angular/material/table';
+        import { Exercise } from '../exercise.model';
+  
+    - Add displayedColumns array property
+    
+        displayedColumns = ['date', 'name', 'duration', 'calories', 'state'];
+    
+        - Note: In the above array, the strings should match with the value of matColumnDef in column template definitions that are defined below
+    
+    - Add dataSource property
+
+        dataSource = new MatTableDataSource<Exercise>();
+
+    - Inject TrainingService into the constructor
+    
+    - Implement ngOnInit() method and assign exercises to the dataSource property
+    
+        ngOnInit() {
+          this.dataSource.data = this.trainingService.fetchCompletedOrCancelledExercises();
+        }
+
+  - past-trainings.component.html
+  
+    - Define a Material table and assign data source
+    
+        <mat-table [dataSource]="dataSource">
+          ...
+        </mat-table>
+      
+    - Define column templates for Date, Name, Calories, Duration & State within <mat-table>
+
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Date</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.date.toDate() | date }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="calories">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Calories</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.calories | number }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="duration">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Duration</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.duration | number }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="state">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>State</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.state }}</mat-cell>
+        </ng-container>
+
+    - Define row templates
+    
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+--------------------------------------------
+3. Add Sorting Feature
+
+  - Material Module`
+
+    - Import MatSortModule and add it to exports array
+    
+        import { MatSortModule } from "@angular/material/sort";
+
+  - Past Trainings Component
+
+    - past-trainings.component.html
+    
+      - Add the matSort directive to <mat-table>
+      
+          <mat-table [dataSource]="dataSource" matSort>
+            ...
+          </mat-table>
+          
+      - Add mat-sort-header to each column header cell that should trigger sorting
+
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Date</mat-header-cell>
+            ...
+          </mat-header-cell>
+          
+    - past-trainings.component.ts
+    
+      - Add a @ViewChild() property that references the MatSort directive
+      
+          @ViewChild(MatSort, { static: true }) sort: MatSort;
+          
+      - Implement ngViewInit(), assign the MatSort property defined above to MatTableDataSource.sort property
+      
+          ngAfterViewInit() {
+            this.dataSource.sort = this.sort;
+          }
+
+--------------------------------------------
+4. Add Filtering Feature
+

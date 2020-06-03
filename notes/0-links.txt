@@ -1,0 +1,63 @@
+Links
+-----
+- Angular coding style guide
+  - https://angular.io/guide/styleguide
+  
+- Angular Cheat Sheet
+  - https://angular.io/guide/cheatsheet
+  
+- Glossary
+  - https://angular.io/guide/glossary
+  
+- Introduction to Angular concepts
+  - https://angular.io/guide/architecture
+  
+- Launching your app with a root module (Bootstrapping)
+  - https://angular.io/guide/bootstrapping
+
+- Angular Modules (NgModules)
+  - https://angular.io/guide/architecture-modules
+  
+- Introduction to components and templates
+  - https://angular.io/guide/architecture-components
+  
+- Hooking into the component lifecycle
+  - https://angular.io/guide/lifecycle-hooks
+  
+- Directives
+  - Attribute Directives
+    - https://angular.io/guide/attribute-directives
+  
+  - Structural Directives
+    - https://angular.io/guide/structural-directives
+    
+- Angular Forms
+  - Introduction to forms in Angular
+    - https://angular.io/guide/forms-overview
+    
+  - Validating form input
+    - https://angular.io/guide/form-validation
+
+- Component Interaction
+  - https://angular.io/guide/component-interaction
+  
+- Routing & Navigation
+  - https://angular.io/guide/router
+
+- Introduction to services and dependency injection
+  - https://angular.io/guide/architecture-services
+
+-------------------------------------------------------------
+- Angular Material
+  - https://material.angular.io/
+  - https://material.angular.io/components/categories
+
+- A Complete Guide to Flexbox
+  - https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+  
+- CSS Flexbox Tutorial for Beginners
+  - https://youtu.be/siKKg8Y_tQY
+  - https://youtu.be/RdlEEfx912M
+
+- Angular Flex-Layout
+  - https://github.com/angular/flex-layout

@@ -4,34 +4,42 @@ Angular Material - 2
 
 1. Add Sidenav
   - Material Module
-    - Import MatSideNavModule
+    - Import MatSideNavModule and add it to exports array
+    
+        import { MatSidenavModule } from '@angular/material/sidenav';
 
-    <mat-sidenav-container>
-      <mat-sidenav #sidenav>
-        <p>Fitness App Sidenav</p>
-      </mat-sidenav>
-      <mat-sidenav-content>
-        <button (click)="sidenav.toggle()">Show Sidenav</button>
-        <main>
-          <router-outlet></router-outlet>
-        </main>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
+    - App Component html
+    
+      <mat-sidenav-container>
+        <mat-sidenav #sidenav>
+          <p>Fitness App Sidenav</p>
+        </mat-sidenav>
+        <mat-sidenav-content>
+          <button (click)="sidenav.toggle()">Show Sidenav</button>
+          <main>
+            <router-outlet></router-outlet>
+          </main>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
 
 ----------------------------------
 2. Add Toolbar
   - Material Module
-    - Import MatToolbarModule
+    - Import MatToolbarModule and add it to exports array
     
-    <mat-toolbar color="primary">
-      <div><button (click)="sidenav.toggle()">Toggle Sidenav</button></div>
-      <div>Fitness App</div>
-      <div>
-        <a routerLink="/training">Training</a>
-        <a routerLink="/login">Login</a>
-        <a routerLink="/signup">Signup</a>
-      </div>
-    </mat-toolbar>
+        import { MatToolbarModule } from "@angular/material/toolbar";
+      
+    - App Component html
+    
+        <mat-toolbar color="primary">
+          <div><button (click)="sidenav.toggle()">Toggle Sidenav</button></div>
+          <div>Fitness App</div>
+          <div>
+            <a routerLink="/training">Training</a>
+            <a routerLink="/login">Login</a>
+            <a routerLink="/signup">Signup</a>
+          </div>
+        </mat-toolbar>
   
   - CSS
     - app.component.css
@@ -90,55 +98,61 @@ Angular Material - 2
 4. Making Toolbar Items Responsive
   
   - Show menu button only for extra small screens
-    <div fxHide.gt-xs>
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-    </div>
+
+      <div fxHide.gt-xs>
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
   
   - Hide menu items for extra small screens`
-    <div fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
-      <ul fxLayout fxLayoutGap="10px" class="navigation-items">
-        ...
-      </ul>
-    </div>
+
+      <div fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
+        <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+          ...
+        </ul>
+      </div>
 
 ----------------------------------
 5. Add Navigation List
+  
   - Material Module
-    - Import MatListModule
+  
+    - Import MatListModule and add it to exports array
+    
+        import { MatListModule } from "@angular/material/list";
     
   - Use <mat-nav-list> component
 
-    <mat-nav-list>
-      <a mat-list-item routerLink="/training"> Training </a>
-      <a mat-list-item routerLink="/login"> Login </a>
-      <a mat-list-item routerLink="/signup"> Signup </a>
-    </mat-nav-list>
+      <mat-nav-list>
+        <a mat-list-item routerLink="/training"> Training </a>
+        <a mat-list-item routerLink="/login"> Login </a>
+        <a mat-list-item routerLink="/signup"> Signup </a>
+      </mat-nav-list>
 
   - Improve: List items with icons
   
-    <mat-nav-list>
-      <a mat-list-item routerLink="/signup" (click)="sidenav.close()">
-        <mat-icon>face</mat-icon>
-        <span class="nav-caption">Signup</span>
-      </a>
-      <a mat-list-item routerLink="/login" (click)="sidenav.close()">
-        <mat-icon>input</mat-icon>
-        <span class="nav-caption">Login</span>
-      </a>
-      <a mat-list-item routerLink="/training" (click)="sidenav.close()">
-        <mat-icon>fitness_center</mat-icon>
-        <span class="nav-caption">Training</span>
-      </a>
-    </mat-nav-list>
+      <mat-nav-list>
+        <a mat-list-item routerLink="/signup" (click)="sidenav.close()">
+          <mat-icon>face</mat-icon>
+          <span class="nav-caption">Signup</span>
+        </a>
+        <a mat-list-item routerLink="/login" (click)="sidenav.close()">
+          <mat-icon>input</mat-icon>
+          <span class="nav-caption">Login</span>
+        </a>
+        <a mat-list-item routerLink="/training" (click)="sidenav.close()">
+          <mat-icon>fitness_center</mat-icon>
+          <span class="nav-caption">Training</span>
+        </a>
+      </mat-nav-list>
     
   - CSS
   
-    .nav-caption {
-      display: inline-block;
-      padding-left: 6px;
-    }
+      .nav-caption {
+        display: inline-block;
+        padding-left: 6px;
+      }
 
 ----------------------------------
 6. Logout menu item

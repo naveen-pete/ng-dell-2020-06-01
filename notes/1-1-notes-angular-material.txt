@@ -44,7 +44,10 @@ Angular Material - 1
 ---------------------
 5. How to use an Angular Material component?
   - Material Module
-    - Import MatButtonModule and MatIconModule
+    - Import MatButtonModule and MatIconModule, and add them to exports array
+    
+        import { MatButtonModule } from "@angular/material/button";
+        import { MatIconModule } from "@angular/material/icon";
 
   - Button
     <button mat-button>Basic</button>
@@ -62,7 +65,10 @@ Angular Material - 1
 ---------------------
 6. Signup component
   - Material Module
-    - Import MatFormFieldModule and MatInputModule
+    - Import MatFormFieldModule and MatInputModule and add them to exports array
+
+        import { MatInputModule } from '@angular/material/input';
+        import { MatFormFieldModule } from "@angular/material/form-field";
 
   - Form Field component
     - <mat-form-field>
@@ -148,7 +154,7 @@ Angular Material - 1
 10. Add Date Picker
 
   - Material Module
-    - Import MatDatepickerModule and MatNativeDateModule
+    - Import MatDatepickerModule and MatNativeDateModule and add it to exports array
     
         import { MatDatepickerModule } from '@angular/material/datepicker';
         import { MatNativeDateModule } from '@angular/material/core';
@@ -171,7 +177,9 @@ Angular Material - 1
 11. Add Checkbox
 
   - Material Module
-    - Import MatCheckboxModule
+    - Import MatCheckboxModule and add it to exports array
+    
+        import { MatCheckboxModule } from '@angular/material/checkbox';
 
   - Signup component HTML
       <mat-checkbox ngModel name="agree" required color="primary">Agree to Terms and Conditions.</mat-checkbox>
@@ -222,26 +230,3 @@ Angular Material - 1
 
   - Modify app component HTML
     - Include <router-outlet></router-outlet> directive
-
----------------------
-15. Links
-  - Angular Material
-    - https://material.angular.io/
-    - https://material.angular.io/components/categories
-
-  - A Complete Guide to Flexbox
-    - https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-    
-  - CSS Flexbox Tutorial for Beginners
-    - https://youtu.be/siKKg8Y_tQY
-    - https://youtu.be/RdlEEfx912M
-  
-  - Angular Flex-Layout
-    - https://github.com/angular/flex-layout
-    
-  - Angular Forms
-    - Introduction to forms in Angular
-      - https://angular.io/guide/forms-overview
-      
-    - Validating form input
-      - https://angular.io/guide/form-validation
