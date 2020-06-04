@@ -1,6 +1,6 @@
 Angular Material - 6
 --------------------
-(Past Trainings)
+(Past Trainings - table, sorting, filtering, pagination)
 
 1. Training Service
   
@@ -87,7 +87,7 @@ Angular Material - 6
 --------------------------------------------
 3. Add Sorting Feature
 
-  - Material Module`
+  - Material Module
 
     - Import MatSortModule and add it to exports array
     
@@ -111,11 +111,15 @@ Angular Material - 6
           
     - past-trainings.component.ts
     
+      - Add this import
+      
+          import { MatSort } from "@angular/material/sort";
+    
       - Add a @ViewChild() property that references the MatSort directive
       
           @ViewChild(MatSort, { static: true }) sort: MatSort;
           
-      - Implement ngViewInit(), assign the MatSort property defined above to MatTableDataSource.sort property
+      - Implement ngAfterViewInit(), assign the MatSort property defined above to MatTableDataSource.sort property
       
           ngAfterViewInit() {
             this.dataSource.sort = this.sort;
@@ -124,3 +128,59 @@ Angular Material - 6
 --------------------------------------------
 4. Add Filtering Feature
 
+  - Past Trainings Component
+  
+    - past-trainings.component.html
+          
+      - Add a text box for specifying filter text
+      - Specify a callback function for handling keyup event, pass user entered value to the event handler
+      
+          <div fxLayoutAlign="center center">
+            <mat-form-field fxFlex="40%">
+              <input matInput type="text" (keyup)="doFilter($event.target.value)" placeholder="Filter">
+            </mat-form-field>
+          </div>
+
+    - past-trainings.component.ts 
+    
+      - Add doFilter() method - the keyup event handler. 
+      - This should take the filter string as input parameter. 
+      - Assign the filter string to MatTableDataSource.filter property
+
+          doFilter(filterValue: string) {
+            this.dataSource.filter = filterValue.trim().toLowerCase();
+          }
+
+--------------------------------------------
+5. Add Pagination
+
+  - Material Module
+
+    - Import MatPaginatorModule and add it to exports array
+
+        import { MatPaginatorModule } from "@angular/material/paginator";
+
+  - Past Trainings Component
+
+    - past-trainings.component.html
+    
+      - Add paginator component below the <mat-table> component
+
+          <mat-paginator [pageSize]="5" [pageSizeOptions]="[2, 5, 10]"></mat-paginator>
+          
+    - past-trainings.component.ts`
+    
+        - Add this import
+        
+            import { MatPaginator } from "@angular/material/paginator";
+      
+        - Add a @ViewChild() property that references the MatPaginator directive
+        
+            @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+            
+        - Update ngAfterViewInit(), assign the MatPaginator property defined above to MatTableDataSource.paginator property
+        
+            ngAfterViewInit() {
+              this.dataSource.sort = this.sort;
+              this.dataSource.paginator = this.paginator;
+            }

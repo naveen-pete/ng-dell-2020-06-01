@@ -1,0 +1,79 @@
+// Synchronous coding
+
+    function printUser(user) {
+      console.log('user:', user);
+    }
+    
+    function getUser(id) {
+      // AJAX request to the server to get user
+      
+      return {
+        id: 1,
+        name: 'naveen'
+      }
+    }
+   
+    // sync
+    const user = getUser(100); // 5sec
+    printUser(user);
+    
+    doSomeOtherWork();
+
+---------------------------------------------------------
+// Asynchronous coding
+// Technique #1. Callbacks - before 2015 - ES5
+
+    function printUser(user) {
+      console.log('user:', user);
+    }
+
+    function getUser(id, cb) {
+      // AJAX request to the server to get user
+      
+      cb({
+        id: 1,
+        name: 'naveen'
+      });
+    }
+    
+    getUser(100, printUser);
+    doSomeOtherWork();
+
+---------------------------------------------------------
+// Technique #2. Promises - from 2015 - ES6/ES2015 feature
+
+  // wrap the long running operation with a promise object
+  
+  const p = new Promise((resolve, reject) => {
+
+    // AJAX request to the server to get user
+
+    // if server responds with 200 status (indicates success)
+    //    call resolve function and pass the data 
+        resolve({
+          id: 1,
+          name: 'naveen'
+        });
+        
+    // if server responds with 400 or 500 status (indicates client or server error)
+    //    call reject function and pass the error message 
+        reject('Some error');
+        
+  });
+   
+  // respond to success response
+  p.then((user) => {
+    // do necessary work when server responds successfully
+    console.log(user); 
+  });
+  
+  // respond to error response
+  p.catch((error) => {
+    // handle error
+  });
+  
+---------------------------------------------------------
+// Technique #3. Observable  
+// - Not part of JS language spec
+// - Coming for a third-party library called 'rxjs'
+// - ReactiveX - http://reactivex.io/

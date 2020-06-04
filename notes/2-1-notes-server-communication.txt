@@ -1,0 +1,151 @@
+Server Communication - 1
+------------------------
+
+1. Getting Available Exercises
+
+  - App Module (app.module.ts)
+  
+    - Import HttpClientModule and add it to imports array
+  
+        import { HttpClientModule } from '@angular/common/http';
+
+  - Training Service (training.service.ts)
+  
+    - Add exercisesChanged event
+    
+        exercisesChanged = new Subject<Exercise[]>();
+  
+    - Inject HttpClient into the constructor
+    
+        constructor(private http: HttpClient) {}
+        
+    - Rename method name - getAvailableExercises to fetchAvailableExercises
+  
+    - Update fetchAvailableExercises() method to retrieve available exercises from the server
+    
+        fetchAvailableExercises() {
+          this.http.get('rest-api-url-to-get-exercises')
+            .subscribe(
+              exercises => {
+                this.availableExercises = exercises;
+                this.exercisesChanged.next([...this.availableExercises]);
+              }
+            );
+        }
+
+    - New Training Component (new-training.component.ts)
+    
+      - Add subscription property to store the exercise subscription
+      
+          private exerciseSubscription: Subscription;
+    
+      - Update ngOnInit()
+      
+          ngOnInit() {
+            this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(
+              exercises => this.exercises = exercises
+            );
+
+            this.fetchExercises();
+          }
+
+      - Add ngOnDestroy() and release the subscription
+      
+          ngOnDestroy() {
+            if (this.exerciseSubscription) {
+              this.exerciseSubscription.unsubscribe();
+            }
+          }
+
+----------------------------------------------------------------
+2. Saving Completed Exercises
+
+  - Training Service (training.service.ts)
+  
+    - Add a private method - addDataToDatabase
+
+        private addDataToDatabase(exercise: Exercise) {
+          this.http.post('rest-api-url-to-save-exercise')
+            .subscribe(
+              () => console.log('Save exercise successful.'),
+              error => {
+                console.log('Save exercise failed.');
+                console.log('Error:', error);
+              }
+            )
+        }
+
+    - Update completeExercise() method to call addDataToDatabase()
+    
+        completeExercise() {
+          this.addDataToDatabase({
+            ...this.runningExercise,
+            date: new Date(),
+            state: 'completed'
+          });
+          this.runningExercise = null;
+          this.exerciseChanged.next(null);
+        }
+        
+    - Update cancelExercise() method to call addDataToDatabase()
+    
+        cancelExercise(progress: number) {
+          this.addDataToDatabase({
+            ...this.runningExercise,
+            duration: this.runningExercise.duration * (progress / 100),
+            calories: this.runningExercise.calories * (progress / 100),
+            date: new Date(),
+            state: 'cancelled'
+          });
+          this.runningExercise = null;
+          this.exerciseChanged.next(null);
+        }
+
+----------------------------------------------------------------
+3. Getting Completed Exercises
+
+  - Training Service (training.service.ts)
+  
+    - Add finishedExercisesChanged event
+    
+        finishedExercisesChanged = new Subject<Exercise[]>();
+
+  
+    - Rename method name - getCompletedOrCancelledExercises to fetchCompletedOrCancelledExercises
+
+    - Update fetchCompletedOrCancelledExercises() method to retrieve completed exercises from the server
+    
+        fetchCompletedOrCancelledExercises() {
+          this.http.get('rest-api-url-to-get-completed-exercises')
+            .subscribe(
+              exercises => {
+                this.finishedExercisesChanged.next(exercises);
+              }
+            );
+        }
+
+  - Past Trainings Component (past-trainings.component.ts)
+
+      - Add subscription property to store the exercise subscription
+      
+          private exChangedSubscription: Subscription;
+    
+      - Update ngOnInit()
+      
+          ngOnInit() {
+            this.exChangedSubscription = this.trainingService.finishedExercisesChanged.subscribe(
+              (exercises: Exercise[]) => {
+                this.dataSource.data = exercises;
+              }
+            );
+
+            this.trainingService.fetchCompletedOrCancelledExercises();
+          }
+
+      - Add ngOnDestroy() and release the subscription
+      
+          ngOnDestroy() {
+            if (this.exChangedSubscription) {
+              this.exChangedSubscription.unsubscribe();
+            }
+          }
