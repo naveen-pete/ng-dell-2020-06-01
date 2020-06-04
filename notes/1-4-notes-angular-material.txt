@@ -31,14 +31,14 @@ Angular Material - 4
         registerUser(authData: AuthData) {
           this.user = {
             email: authData.email,
-            userId: Date.now()
+            userId: Date.now().toString()
           };
         }
 
         login(authData: AuthData) {
           this.user = {
             email: authData.email,
-            userId: Date.now()
+            userId: Date.now().toString()
           };
         }
 

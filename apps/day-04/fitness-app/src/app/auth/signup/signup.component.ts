@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { AppValidators } from '../../common/app-validators';
+import { AuthService } from '../auth.service';
+import { AuthData } from '../auth-data.model';
 
 @Component({
   selector: 'app-signup',
@@ -12,7 +14,7 @@ export class SignupComponent implements OnInit {
   maxDate: Date;
   form: FormGroup;
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.maxDate = new Date();
@@ -23,7 +25,7 @@ export class SignupComponent implements OnInit {
 
   private buildForm() {
     this.form = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email], AppValidators.isEmailTakenAsync),
+      email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       birthdate: new FormControl('', Validators.required),
       agree: new FormControl(false, [Validators.requiredTrue])
@@ -35,7 +37,12 @@ export class SignupComponent implements OnInit {
       return;
     }
 
-    console.log('form value:', this.form.value);
+    const userInfo: AuthData = {
+      email: this.form.value.email,
+      password: this.form.value.password
+    };
+
+    this.authService.registerUser(userInfo);
   }
 
   get email() {

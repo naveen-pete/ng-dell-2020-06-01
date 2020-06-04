@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
+import { AuthData } from '../auth-data.model';
+import { AuthService } from '../auth.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -9,7 +12,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class LoginComponent implements OnInit {
   form: FormGroup;
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -23,7 +26,13 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    console.log('form value:', this.form.value);
+    const userInfo: AuthData = {
+      email: this.form.value.email,
+      password: this.form.value.password
+    };
+
+    this.authService.login(userInfo);
+
   }
 
   get email() {
