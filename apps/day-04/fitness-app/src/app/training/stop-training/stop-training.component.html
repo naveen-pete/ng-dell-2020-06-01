@@ -1,8 +1,10 @@
-<h1 mat-dialog-title>Are you sure?</h1>
-<mat-dialog-content>
-  <p>You already got {{ data.progress }}%</p>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="true">Yes</button>
-  <button mat-button [mat-dialog-close]="false">No</button>
-</mat-dialog-actions>
+<section class="stop-training" fxLayout="column" fxLayoutAlign="center center">
+  <h1 mat-dialog-title>Are you sure?</h1>
+  <mat-dialog-content>
+    <p>You already got {{ data.progress }}%</p>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-stroked-button color="primary" [mat-dialog-close]="true">Yes</button>
+    <button mat-stroked-button color="accent" [mat-dialog-close]="false">No</button>
+  </mat-dialog-actions>
+</section>

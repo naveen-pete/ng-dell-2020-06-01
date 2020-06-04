@@ -1,10 +1,9 @@
 <section class="new-training" fxLayout fxLayoutAlign="center">
-  <mat-card fxFlex.xs="100%" fxFlex="400px" fxLayout="column" fxLayoutAlign="center center">
-    <mat-card-title>Time to start a workout!</mat-card-title>
+  <mat-card fxFlex.xs="100%" fxFlex="400px">
+    <mat-card-title fxLayoutAlign="center">Time to start a workout!</mat-card-title>
 
-    <mat-card-content>
+    <mat-card-content fxLayoutAlign="center">
       <mat-form-field>
-        <mat-label>Select a Training</mat-label>
         <mat-select placeholder="Choose an exercise">
           <mat-option value="push-up">
             Push Up
@@ -26,8 +25,8 @@
 
     </mat-card-content>
 
-    <mat-card-actions>
-      <button mat-stroked-button color="accent" type="button" (click)="onStartTraining()">
+    <mat-card-actions fxLayoutAlign="center">
+      <button mat-raised-button color="accent" type="button" (click)="onStartTraining()">
         Start
       </button>
     </mat-card-actions>

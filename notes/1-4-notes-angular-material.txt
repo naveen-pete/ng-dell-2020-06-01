@@ -95,7 +95,7 @@ Angular Material - 4
       
   - Update logout() method to emit 'false';
   
-      this.authChange.next(true);
+      this.authChange.next(false);
       
 --------------------------------------------------
 6. Header Component
@@ -185,12 +185,19 @@ Angular Material - 4
         
   - Sidenav List component
   
-    - Rename onClose() method to onLogout()
+    - Add onLogout() method
     
         onLogout() {
           this.onClose();
           this.authService.logout();
         }
+        
+    - Change click event to point to onLogout() method
+    
+        <button mat-icon-button (click)="onLogout()" *ngIf="isAuth">
+          <mat-icon>eject</mat-icon>
+          <span class="nav-caption">Logout</span>
+        </button>
 
 -------------------------------------------------     
 10. Route Protection

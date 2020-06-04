@@ -21,7 +21,7 @@ export class AuthService {
 
     this.authChange.next(true);
 
-    console.log('User registered successfully.');
+    console.log('Register user successful.');
   }
 
   login(authData: AuthData) {
@@ -33,12 +33,14 @@ export class AuthService {
 
     this.authChange.next(true);
 
-    console.log('User logged in successfully.');
+    console.log('Login successful.');
   }
 
   logout() {
     this.user = null;
     this.authChange.next(false);
+
+    console.log('Logout successful.');
   }
 
   isAuth() {
