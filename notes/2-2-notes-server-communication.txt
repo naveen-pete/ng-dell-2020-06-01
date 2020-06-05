@@ -1,0 +1,71 @@
+Server Communication - 2
+------------------------
+(Signup, Login)
+
+1. Signup & Login
+
+  - Auth Service (auth.service.ts)
+    - Add isAuthenticated property
+    
+        private isAuthenticated = false;
+  
+    - Inject HttpClient into the constructor
+
+        constructor(private http: HttpClient) {}
+
+    - Update registerUser() method to include code to signup an user
+    
+        registerUser(authData: AuthData) {
+          this.http.post('rest-api-url-to-signup-user')
+            .subscribe(
+              response => {
+                console.log('Register user successful.');
+
+                this.isAuthenticated = true;
+                this.authChange.next(true);
+                this.router.navigate(['/training']);
+                
+                // TODO - Pending study - Firebase REST API for user registration
+              },
+              error => {
+                console.log('Register user failed.');
+                console.log('Error:', error);
+              }
+            );
+        }
+
+    - Update login() method to include code to login the user
+    
+        login(authData: AuthData) {
+          this.http.post('rest-api-url-to-login-user')
+            .subscribe(
+              response => {
+                console.log('Login successful.');
+
+                this.isAuthenticated = true;
+                this.authChange.next(true);
+                this.router.navigate(['/training']);
+                
+                // TODO - Pending study - Firebase REST API for user login
+              },
+              error => {
+                console.log('Login failed.');
+                console.log('Error:', error);
+              }
+            );
+        }
+        
+    - Update logout() method
+    
+        logout() {
+          this.authChange.next(false);
+          this.router.navigate(['/login']);
+          this.isAuthenticated = false;
+        }
+
+    - Update isAuth() method
+    
+        isAuth() {
+          return this.isAuthenticated;
+        }
+

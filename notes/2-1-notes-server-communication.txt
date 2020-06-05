@@ -1,5 +1,6 @@
 Server Communication - 1
 ------------------------
+(Get Available Exercises, Save Exercise, Get Completed Exercises)
 
 1. Getting Available Exercises
 
@@ -19,7 +20,7 @@ Server Communication - 1
     
         constructor(private http: HttpClient) {}
         
-    - Rename method name - getAvailableExercises to fetchAvailableExercises
+    - Rename method - getAvailableExercises to fetchAvailableExercises
   
     - Update fetchAvailableExercises() method to retrieve available exercises from the server
     
@@ -29,6 +30,13 @@ Server Communication - 1
               exercises => {
                 this.availableExercises = exercises;
                 this.exercisesChanged.next([...this.availableExercises]);
+                
+                // TODO - Pending study - Firebase REST API for reading data
+                
+              },
+              error => {
+                console.log('Get available exercises failed.');
+                console.log('Error:', error);
               }
             );
         }
@@ -46,7 +54,7 @@ Server Communication - 1
               exercises => this.exercises = exercises
             );
 
-            this.fetchExercises();
+            this.trainingService.fetchAvailableExercises();
           }
 
       - Add ngOnDestroy() and release the subscription
@@ -67,7 +75,11 @@ Server Communication - 1
         private addDataToDatabase(exercise: Exercise) {
           this.http.post('rest-api-url-to-save-exercise')
             .subscribe(
-              () => console.log('Save exercise successful.'),
+              () => {
+                console.log('Save exercise successful.');
+                
+                // TODO - Pending study - Firebase REST API for posting data
+              },
               error => {
                 console.log('Save exercise failed.');
                 console.log('Error:', error);
@@ -109,9 +121,8 @@ Server Communication - 1
     - Add finishedExercisesChanged event
     
         finishedExercisesChanged = new Subject<Exercise[]>();
-
   
-    - Rename method name - getCompletedOrCancelledExercises to fetchCompletedOrCancelledExercises
+    - Rename method - getCompletedOrCancelledExercises to fetchCompletedOrCancelledExercises
 
     - Update fetchCompletedOrCancelledExercises() method to retrieve completed exercises from the server
     
@@ -120,6 +131,12 @@ Server Communication - 1
             .subscribe(
               exercises => {
                 this.finishedExercisesChanged.next(exercises);
+                
+                // TODO - Pending study - Firebase REST API for reading data
+              },
+              error => {
+                console.log('Get completed exercises failed.');
+                console.log('Error:', error);
               }
             );
         }

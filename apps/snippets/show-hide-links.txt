@@ -1,0 +1,10 @@
+Show/Hide Links
+Scenarios
+-----------------------------------------------
+Links     User not logged in    User logged in     
+-----------------------------------------------
+Login           Y                     Y
+Signup          Y                     Y 
+Training        N                     N
+Logout          N                     N
+-----------------------------------------------
