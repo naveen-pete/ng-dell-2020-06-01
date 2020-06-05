@@ -74,3 +74,15 @@ Links
 
 - Angular Flex-Layout
   - https://github.com/angular/flex-layout
+
+-------------------------------------------------------------
+- Firebase
+
+- Firebase Database REST API
+  - https://firebase.google.com/docs/reference/rest/database
+
+- Firebase Auth REST API
+  - https://firebase.google.com/docs/reference/rest/auth
+
+- Authenticate REST Requests
+  - https://firebase.google.com/docs/database/rest/auth

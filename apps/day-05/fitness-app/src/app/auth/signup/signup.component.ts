@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AppValidators } from '../../common/app-validators';
 import { AuthService } from '../auth.service';
@@ -14,7 +15,7 @@ export class SignupComponent implements OnInit {
   maxDate: Date;
   form: FormGroup;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.maxDate = new Date();
@@ -43,6 +44,7 @@ export class SignupComponent implements OnInit {
     };
 
     this.authService.registerUser(userInfo);
+    // this.router.navigate(['/']);
   }
 
   get email() {

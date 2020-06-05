@@ -1,5 +1,6 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
@@ -9,8 +10,11 @@ import { AuthData } from './auth-data.model';
 })
 export class AuthService {
   private user: User;
+  private isAuthenticated: boolean = false;
 
   authChange = new Subject<boolean>();
+
+  constructor(private router: Router) { }
 
   registerUser(authData: AuthData) {
     // ajax request that saves user information on the server
@@ -20,6 +24,8 @@ export class AuthService {
     };
 
     this.authChange.next(true);
+    this.isAuthenticated = true;
+    this.router.navigate(['/']);
 
     console.log('Register user successful.');
   }
@@ -32,6 +38,8 @@ export class AuthService {
     };
 
     this.authChange.next(true);
+    this.isAuthenticated = true;
+    this.router.navigate(['/training']);
 
     console.log('Login successful.');
   }
@@ -39,12 +47,14 @@ export class AuthService {
   logout() {
     this.user = null;
     this.authChange.next(false);
+    this.isAuthenticated = false;
+    this.router.navigate(['/login']);
 
     console.log('Logout successful.');
   }
 
   isAuth() {
-    return this.user != null;
+    return this.isAuthenticated;
   }
 
 }
