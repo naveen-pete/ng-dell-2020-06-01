@@ -1,6 +1,6 @@
 Angular Material - 5
 --------------------
-(Exercises, Training Service, Active Exercise)
+(Training Service, Available Exercises, Active Exercise, Completed Exercises)
 
 1. Training folder
 
@@ -82,9 +82,9 @@ Angular Material - 5
 
   - Training Service
   
-    - Add exerciseChanged property 
+    - Add runningExerciseChanged property 
 
-        exerciseChanged = new Subject<Exercise>();
+        runningExerciseChanged = new Subject<Exercise>();
 
     - Update startExercise() method to emit the selected exercise
     
@@ -92,7 +92,7 @@ Angular Material - 5
           this.runningExercise = this.availableExercises.find(
             ex => ex.id === selectedId
           );
-          this.exerciseChanged.next({ ...this.runningExercise });
+          this.runningExerciseChanged.next({ ...this.runningExercise });
         }
 
   - Training Component
@@ -101,10 +101,10 @@ Angular Material - 5
     
     - Inject TrainingService into the constructor
     
-    - Implement ngOnInit() method, subscribe to TrainingService.exerciseChanged event
+    - Implement ngOnInit() method, subscribe to TrainingService.runningExerciseChanged event
     
         ngOnInit() {
-          this.exerciseSubscription = this.trainingService.exerciseChanged.subscribe(
+          this.exerciseSubscription = this.trainingService.runningExerciseChanged.subscribe(
             exercise => {
               if (exercise) {
                 this.ongoingTraining = true;
@@ -182,7 +182,7 @@ Angular Material - 5
             state: 'completed'
           });
           this.runningExercise = null;
-          this.exerciseChanged.next(null);
+          this.runningExerciseChanged.next(null);
         }
 
     - Add cancelExercise() method
@@ -196,7 +196,7 @@ Angular Material - 5
             state: 'cancelled'
           });
           this.runningExercise = null;
-          this.exerciseChanged.next(null);
+          this.runningExerciseChanged.next(null);
         }
 
   - Current Training Component

@@ -59,6 +59,9 @@ Links
   
   - Observables compared to other techniques
     - https://angular.io/guide/comparing-observables
+    
+- Communicating with backend services using HTTP
+  - https://angular.io/guide/http
 
 -------------------------------------------------------------
 - Angular Material
@@ -77,6 +80,9 @@ Links
 
 -------------------------------------------------------------
 - Firebase
+
+- Installation & Setup for REST API
+  - https://firebase.google.com/docs/database/rest/start
 
 - Firebase Database REST API
   - https://firebase.google.com/docs/reference/rest/database

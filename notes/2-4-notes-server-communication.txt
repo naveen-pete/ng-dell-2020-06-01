@@ -1,0 +1,160 @@
+Server Communication - 4
+------------------------
+(Managing auth token storage)
+
+1. Persisting auth token in local storage and reading it when the app starts
+
+  - Auth Service (auth.service.ts)
+  
+    - Update isAuth() method to return true (temporarily disable auth guard)
+    
+        isAuth() {
+          return true;
+        }
+  
+    - Update handleAuthToken() method to store user data into local storage
+    
+        private handleAuthToken(responseData: AuthResponseData) {
+          const { localId, email, idToken, expiresIn } = responseData;
+          const expiresInMS =
+            (expiresIn ? parseInt(expiresIn) : TOKEN_EXPIRATION_TIME_IN_SEC) * 1000;
+          const tokenExpirationDate = new Date(Date.now() + expiresInMS);
+
+          const user = new User(
+            localId,
+            email,
+            idToken,
+            tokenExpirationDate
+          );
+
+          this.user.next(user);
+          localStorage.setItem('userData', JSON.stringify(user));
+        }
+
+    - Add new method - autoLogin()
+      - Read user data from local storage
+      - Check if token is expired, if not expired, create new user instance and emit an event
+    
+        autoLogin() {
+          const userData: {
+            id: string,
+            email: string,
+            _token: string,
+            _tokenExpirationDate: string
+          } = JSON.parse(localStorage.getItem('userData'));
+
+          if (!userData) {
+            return;
+          }
+
+          const tokenExpirationDate = new Date(userData._tokenExpirationDate);
+          const user = new User(
+            userData.id,
+            userData.email,
+            userData._token,
+            tokenExpirationDate
+          );
+          if (user.token) {
+            this.user.next(user);
+          }
+        }
+        
+  - App Component (app.component.ts)
+  
+    - Inject AuthService into the constructor
+    
+        constructor(private authService: AuthService) { }
+    
+    - Implement OnInit interface, include a call to AuthService.autoLogin()
+        
+        ngOnInit() {
+          this.authService.autoLogin();
+        }
+        
+-----------------------------------------------------------------------------
+2. Clearing auth token when it expires and logging out of the app
+
+  - Auth Service (auth.service.ts)
+
+    - Add autoLogoutTimer property
+    
+        private autoLogoutTimer: number;
+    
+    - Add autoLogout() method
+      - It takes expiration duration (in milliseconds) as input parameter
+      - It sets up an auto logout timer, the timer callback should invoke logout() method, when the timeout occurs
+      
+          private autoLogout(expirationDuration: number) {
+            this.autoLogoutTimer = window.setTimeout(
+              () => {
+                this.logout();
+              },
+              expirationDuration
+            );
+          }
+
+    - Update logout() method to clear the auth token when user logs out
+      - Clear the auto logout timer as well
+
+          logout() {
+            this.user.next(null);
+            localStorage.removeItem('userData');
+
+            if (this.autoLogoutTimer) {
+              window.clearTimeout(this.autoLogoutTimer);
+              this.autoLogoutTimer = null;
+            }
+
+            this.router.navigate(['/login']);
+
+            console.log('Logout successful.');
+          }
+
+    - Update handleAuthToken() to invoke autoLogout() method
+    
+          private handleAuthToken(responseData: AuthResponseData) {
+            const { localId, email, idToken, expiresIn } = responseData;
+            const expiresInMS =
+              (expiresIn ? parseInt(expiresIn) : TOKEN_EXPIRATION_TIME_IN_SEC) * 1000;
+            const tokenExpirationDate = new Date(Date.now() + expiresInMS);
+
+            const user = new User(
+              localId,
+              email,
+              idToken,
+              tokenExpirationDate
+            );
+
+            this.user.next(user);
+            this.autoLogout(expiresInMS);
+            localStorage.setItem('userData', JSON.stringify(user));
+          }
+
+    - Update autoLogin() method to invoke autoLogout() method
+    
+        autoLogin() {
+          const userData: {
+            id: string;
+            email: string;
+            _token: string;
+            _tokenExpirationDate: string;
+          } = JSON.parse(localStorage.getItem('userData'));
+
+          if (!userData) {
+            return;
+          }
+
+          const tokenExpirationDate = new Date(userData._tokenExpirationDate);
+          const user = new User(
+            userData.id,
+            userData.email,
+            userData._token,
+            tokenExpirationDate
+          );
+          if (user.token) {
+            this.user.next(user);
+            const expirationDuration = tokenExpirationDate.getTime() - Date.now();
+            this.autoLogout(expirationDuration);
+          }
+        }
+

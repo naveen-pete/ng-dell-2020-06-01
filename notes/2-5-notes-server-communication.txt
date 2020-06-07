@@ -1,0 +1,39 @@
+Server Communication - 5
+------------------------
+(Auth Guard, Refactor code)
+
+1. Auth Guard (auth.guard.ts)
+
+  - Inject AuthService and Router into the constructor
+  
+        constructor(
+          private authService: AuthService,
+          private router: Router
+        ) { }
+
+  - Update AuthGuard.canActivate() method to utilize AuthService.user event
+  
+        canActivate(
+          next: ActivatedRouteSnapshot,
+          state: RouterStateSnapshot
+        ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+
+          return this.authService.user.pipe(
+            take(1),
+            map(user => {
+              console.log('user:', user);
+              if (user) {
+                return true;
+              }
+              return this.router.createUrlTree(['/login']);
+            })
+          );
+
+        }
+
+--------------------------------------------------------------------------------------
+2. Clean up Auth Service
+  - Replace authChange event with user event in Header and SidenavList components
+  - Remove authChange event as it is not referenced anywhere
+  - Remove isAuth() method reference from AuthGuard and remove the property from the service 
+  - Remove isAuthenticated boolean property and all its references

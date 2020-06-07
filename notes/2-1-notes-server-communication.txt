@@ -2,7 +2,51 @@ Server Communication - 1
 ------------------------
 (Get Available Exercises, Save Exercise, Get Completed Exercises)
 
-1. Getting Available Exercises
+1. Setup Firebase Database
+
+  - Logon to Firebase Console (use your Google Mail Id)
+  
+      https://console.firebase.google.com/
+      
+  - Create a new Firebase project
+    - Click Add Project
+    - Provide project name and click Continue
+    - Keep the default settings and click Continue
+    - You will be taken to the project screen once the project is created successfully 
+    
+  - Create a Realtime Database
+    - Ensure that you are inside the project screen
+    - From the side navigation menu select Database option (under Develop category)
+    - Click Create database button within Realtime Database option 
+      (Note: Do not create Cloud Firestore database, we will need Realtime Database)
+    - In the popup, select 'Start in test mode' option and click Enable button
+    - Copy the link and paste it in environment (<firebase-database-url>) file of your Angular app. 
+      See section #2 below for details
+      
+  - Populate available exercises in the database
+    - Clone or pull the GitHub repository into your local machine
+    - A Node app is available inside 'ng-dell-2020-06-01\apps\helper-apps\fitness-app-lookups' folder
+    - In db-api-url.js, replace <firebase-database-url> with the link (url) of Firebase Realtime Database
+    - In a command window, run the following command after navigating to 'fitness-app-lookups' folder  
+    
+        node post-exercises
+
+----------------------------------------------------------------
+2. Configure REST API URL
+
+  - Open environment.ts. This file can be found under 'src/environments' folder within your Angular project
+  
+  - Add 'dataApiUrl' key
+  
+      export const environment = {
+        production: false,
+        dataApiUrl: '<firebase-database-url>/fitness-store'
+      };
+      
+  - Replace <firebase-database-url> with the actual URL of your Firebase Realtime Database which you created in section #1 above
+
+----------------------------------------------------------------
+3. Getting Available Exercises
 
   - App Module (app.module.ts)
   
@@ -11,10 +55,19 @@ Server Communication - 1
         import { HttpClientModule } from '@angular/common/http';
 
   - Training Service (training.service.ts)
+    
+    - Add import statements for HttpClient and environment
+
+        import { HttpClient } from '@angular/common/http';
+        import { environment } from '../../environments/environment';
+        
+    - Ensure that availableExercises property is assigned an empty array
+    
+        private availableExercises: Exercise[] = [];
   
     - Add exercisesChanged event
     
-        exercisesChanged = new Subject<Exercise[]>();
+        availableExercisesChanged = new Subject<Exercise[]>();
   
     - Inject HttpClient into the constructor
     
@@ -25,60 +78,91 @@ Server Communication - 1
     - Update fetchAvailableExercises() method to retrieve available exercises from the server
     
         fetchAvailableExercises() {
-          this.http.get('rest-api-url-to-get-exercises')
+          this.http.get<any>(`${environment.dataApiUrl}/available-exercises.json`)
             .subscribe(
               exercises => {
                 this.availableExercises = exercises;
-                this.exercisesChanged.next([...this.availableExercises]);
-                
-                // TODO - Pending study - Firebase REST API for reading data
-                
+                this.availableExercisesChanged.next([...this.availableExercises]);
               },
               error => {
-                console.log('Get available exercises failed.');
+                console.log('Fetch available exercises failed.');
                 console.log('Error:', error);
               }
             );
         }
 
-    - New Training Component (new-training.component.ts)
+  - New Training Component (new-training.component.ts)
+  
+    - Add subscription property to store the exercise subscription, import Subscription from 'rxjs'
     
-      - Add subscription property to store the exercise subscription
-      
-          private exerciseSubscription: Subscription;
+        private exerciseSubscription: Subscription;
+  
+    - Update ngOnInit()
     
-      - Update ngOnInit()
-      
-          ngOnInit() {
-            this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(
-              exercises => this.exercises = exercises
-            );
+        ngOnInit() {
+          this.exerciseSubscription = this.trainingService.availableExercisesChanged.subscribe(
+            exercises => this.exercises = exercises
+          );
 
-            this.trainingService.fetchAvailableExercises();
+          this.trainingService.fetchAvailableExercises();
+        }
+
+    - Add ngOnDestroy() and release the subscription
+    
+        ngOnDestroy() {
+          if (this.exerciseSubscription) {
+            this.exerciseSubscription.unsubscribe();
           }
+        }
+          
+  - Training Service
 
-      - Add ngOnDestroy() and release the subscription
-      
-          ngOnDestroy() {
-            if (this.exerciseSubscription) {
-              this.exerciseSubscription.unsubscribe();
+    - The response from the server and the expected result do not match 
+    - Firebase query returns the data in a different shape
+    - This will require us to use the map() operator
+    - Update fetchAvailableExercises() method to use map() operator
+    
+        this.http.get<Exercise[]>(`${environment.dataApiUrl}/available-exercises.json`)
+          .pipe(
+            map(responseData => {
+              const exercises: Exercise[] = [];
+              const keys = Object.keys(responseData);
+
+              keys.forEach(key => {
+                exercises.push({
+                  ...responseData[key],
+                  id: key
+                });
+              });
+
+              return exercises;
+            })
+          )
+          .subscribe(
+            exercises => {
+              this.availableExercises = exercises;
+              this.availableExercisesChanged.next([...this.availableExercises]);
+            },
+            error => {
+              console.log('Fetch available exercises failed.');
+              console.log('Error:', error);
             }
-          }
+          );
 
 ----------------------------------------------------------------
-2. Saving Completed Exercises
+4. Saving Completed Exercises
 
   - Training Service (training.service.ts)
   
     - Add a private method - addDataToDatabase
 
         private addDataToDatabase(exercise: Exercise) {
-          this.http.post('rest-api-url-to-save-exercise')
+          this.http.post(`${environment.dataApiUrl}/finished-exercises.json`, exercise)
             .subscribe(
               () => {
                 console.log('Save exercise successful.');
-                
-                // TODO - Pending study - Firebase REST API for posting data
+                this.runningExercise = null;
+                this.runningExerciseChanged.next(null);
               },
               error => {
                 console.log('Save exercise failed.');
@@ -95,8 +179,6 @@ Server Communication - 1
             date: new Date(),
             state: 'completed'
           });
-          this.runningExercise = null;
-          this.exerciseChanged.next(null);
         }
         
     - Update cancelExercise() method to call addDataToDatabase()
@@ -109,33 +191,45 @@ Server Communication - 1
             date: new Date(),
             state: 'cancelled'
           });
-          this.runningExercise = null;
-          this.exerciseChanged.next(null);
         }
 
 ----------------------------------------------------------------
-3. Getting Completed Exercises
+5. Getting Completed Exercises
 
   - Training Service (training.service.ts)
+  
+    - Remove exercises property. It was used to hold finished exercises earlier. It is not needed anymore. 
   
     - Add finishedExercisesChanged event
     
         finishedExercisesChanged = new Subject<Exercise[]>();
   
-    - Rename method - getCompletedOrCancelledExercises to fetchCompletedOrCancelledExercises
+    - Rename method - getCompletedOrCancelledExercises to fetchFinishedExercises
 
-    - Update fetchCompletedOrCancelledExercises() method to retrieve completed exercises from the server
+    - Update fetchFinishedExercises() method to retrieve completed exercises from the server
     
-        fetchCompletedOrCancelledExercises() {
-          this.http.get('rest-api-url-to-get-completed-exercises')
+        fetchFinishedExercises() {
+          this.http.get<Exercise[]>(`${environment.dataApiUrl}/finished-exercises.json`)
+            .pipe(
+              map(responseData => {
+                const exercises: Exercise[] = [];
+                const keys = Object.keys(responseData);
+
+                keys.forEach(key => {
+                  exercises.push({
+                    ...responseData[key]
+                  });
+                });
+
+                return exercises;
+              })
+            )
             .subscribe(
               exercises => {
                 this.finishedExercisesChanged.next(exercises);
-                
-                // TODO - Pending study - Firebase REST API for reading data
               },
               error => {
-                console.log('Get completed exercises failed.');
+                console.log('Fetch finished exercises failed.');
                 console.log('Error:', error);
               }
             );
@@ -143,26 +237,29 @@ Server Communication - 1
 
   - Past Trainings Component (past-trainings.component.ts)
 
-      - Add subscription property to store the exercise subscription
+      - Add subscription property to store the exercise subscription, import Subscription from 'rxjs'
       
-          private exChangedSubscription: Subscription;
+          private exerciseSubscription: Subscription;
     
       - Update ngOnInit()
       
           ngOnInit() {
-            this.exChangedSubscription = this.trainingService.finishedExercisesChanged.subscribe(
+            this.exerciseSubscription = this.trainingService.finishedExercisesChanged.subscribe(
               (exercises: Exercise[]) => {
                 this.dataSource.data = exercises;
               }
             );
 
-            this.trainingService.fetchCompletedOrCancelledExercises();
+            this.trainingService.fetchFinishedExercises();
+
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
           }
 
       - Add ngOnDestroy() and release the subscription
       
           ngOnDestroy() {
-            if (this.exChangedSubscription) {
-              this.exChangedSubscription.unsubscribe();
+            if (this.exerciseSubscription) {
+              this.exerciseSubscription.unsubscribe();
             }
           }

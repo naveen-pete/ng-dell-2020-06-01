@@ -2,9 +2,104 @@ Server Communication - 2
 ------------------------
 (Signup, Login)
 
-1. Signup & Login
+1. Firebase Configuration #1
+
+  - Change DB configuration from public access to authenticated access of data
+
+    - Login to Firebase Console
+    - Select the Firebase project by clicking on the project
+    - Click Database option on left navigation menu
+    - Ensure that Realtime Database is selected
+    - Go to Rules tab
+    - Change the rules:
+        From
+          {
+            "rules": {
+              ".read": true,
+              ".write": true
+            }
+          }
+
+        To
+          {
+            "rules": {
+              ".read": "auth != null",
+              ".write": "auth != null"
+            }
+          }
+          
+    - Click Publish button to save the new rules
+
+------------------------------------------------------------------------------
+2. Firebase Configuration #2
+
+  - Enable Authentication
+
+    - Login to Firebase Console
+    - Select the Firebase project by clicking on the project
+    - Click Authentication option on left navigation menu
+    - Click on 'Set up sign-in method' button (or) Go to 'Sign-in method' tab
+    - Choose Email/Password option in Sign-in providers list
+    - In the pop-up check the first Enable checkbox and click Save button
+    
+------------------------------------------------------------------------------
+3. Configure Auth REST API URL within the app
+
+  - Open environment.ts. This file can be found under 'src/environments' folder within your Angular project
+  
+  - Add 'authApiUrl' key
+  
+      export const environment = {
+        production: false,
+        dataApiUrl: '<firebase-database-url>/fitness-store',
+        authApiUrl: 'https://identitytoolkit.googleapis.com/v1/accounts'
+      };
+  
+  - Add 'firebaseApiKey' key
+    
+    - Go to 'Project settings'. You can find this option by clicking the gear icon next to Project Overview on the top of side navigation menu
+  
+    - Copy the API key mentioned in the 'Web API key' field, paste this copied key as value for 'firebaseApiKey' field within environment.ts
+
+      export const environment = {
+        production: false,
+        dataApiUrl: '<firebase-database-url>/fitness-store',
+        authApiUrl: 'https://identitytoolkit.googleapis.com/v1/accounts',
+        firebaseApiKey: '<web-api-key>'
+      };
+
+------------------------------------------------------------------------------
+4. Signup & Login
+
+  - Add returnSecureToken boolean property to AuthData model (auth-data.model.ts)
+  
+      export interface AuthData {
+        email: string;
+        password: string;
+        returnSecureToken: boolean;
+      }
+      
+  - Make sure Signup and Login components assign a true value to 'returnSecureToken' property added above before making a call to:
+    - AuthService.registerUser()
+    - AuthService.login()
+
+  - Create AuthResponseData data model within auth folder. Name the file - auth-response-data.model.ts
+      export interface AuthResponseData {
+        email: string;
+        expiresIn: string;
+        idToken: string;
+        kind: string;
+        localId: string;
+        refreshToken: string;
+        registered?: boolean;
+      }
 
   - Auth Service (auth.service.ts)
+    
+    - Import AuthResponseData data model
+    
+        import { AuthResponseData } from './auth-response-data.model';
+  
     - Add isAuthenticated property
     
         private isAuthenticated = false;
@@ -16,45 +111,43 @@ Server Communication - 2
     - Update registerUser() method to include code to signup an user
     
         registerUser(authData: AuthData) {
-          this.http.post('rest-api-url-to-signup-user')
+          this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)
             .subscribe(
-              response => {
+              responseData => {
                 console.log('Register user successful.');
+                console.log('responseData:', responseData);
 
                 this.isAuthenticated = true;
                 this.authChange.next(true);
                 this.router.navigate(['/training']);
-                
-                // TODO - Pending study - Firebase REST API for user registration
               },
               error => {
                 console.log('Register user failed.');
-                console.log('Error:', error);
+                console.log('Error:', error.message);
               }
             );
         }
 
     - Update login() method to include code to login the user
-    
+
         login(authData: AuthData) {
-          this.http.post('rest-api-url-to-login-user')
+          this.http.post<AuthResponseData>(`${environment.authApiUrl}:signInWithPassword?key=${environment.firebaseApiKey}`, authData)
             .subscribe(
-              response => {
+              responseData => {
                 console.log('Login successful.');
+                console.log('responseData:', responseData);
 
                 this.isAuthenticated = true;
                 this.authChange.next(true);
                 this.router.navigate(['/training']);
-                
-                // TODO - Pending study - Firebase REST API for user login
               },
               error => {
                 console.log('Login failed.');
-                console.log('Error:', error);
+                console.log('Error:', error.message);
               }
             );
         }
-        
+    
     - Update logout() method
     
         logout() {
@@ -69,3 +162,147 @@ Server Communication - 2
           return this.isAuthenticated;
         }
 
+    - Refactor the common code needed after successful signup and login
+    
+        private authSuccessful() {
+          this.isAuthenticated = true;
+          this.authChange.next(true);
+          this.router.navigate(['/training']);
+        }
+
+    - Update registerUser() and login() methods to call authSuccessful() when the server responds with success operation
+    
+------------------------------------------------------------------------------
+5. Error handling
+
+  - Let us centralize the error handling for registerUser() and login() methods
+
+  - Auth Service (auth.service.ts)
+  
+    - Add handleError() method
+
+        // NOTE:
+        // This error handling is very specific to Firebase API.
+        // You will need to implement a similar response within your server-side REST API.
+        private handleError(errorResponse: HttpErrorResponse): Observable<Error> {
+          const error = new Error('An unknown error occurred.');
+
+          if (!errorResponse.error || !errorResponse.error.error) {
+            return throwError(error);
+          }
+
+          switch (errorResponse.error.error.message) {
+            case 'EMAIL_EXISTS':            // signup error
+              error.message = 'The email address is already in use by another account.';
+              break;
+
+            case 'EMAIL_NOT_FOUND':         // signup error
+              error.message = 'There is no user record corresponding to this email.';
+              break;
+
+            case 'INVALID_PASSWORD':        // login error
+              error.message = 'The password is invalid or the user does not have a password.';
+              break;
+
+            case 'OPERATION_NOT_ALLOWED':   // login error
+              error.message = 'Password sign-in is disabled.';
+              break;
+
+            case 'USER_DISABLED':
+              error.message = 'The user account has been disabled by an administrator.'
+              break;
+          }
+
+          return throwError(error);
+        }
+        
+    - Update registerUser() and login() methods to include an error handling block in the HTTP request using catchError() rxjs operator
+
+        this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)    
+          .pipe(
+            catchError(this.handleError)
+          )
+          .subscribe(
+            responseData => {
+              ...
+            },
+            error => {
+              ...
+            }
+          );
+
+------------------------------------------------------------------------------
+6. Create and Store User data
+
+  - Tweak the user model (user.model.ts) to include token and token expiration date
+
+      export class User {
+        constructor(
+          public id: string,
+          public email: string,
+          private _token: string,
+          private _tokenExpirationDate: Date
+        ) { }
+
+        get token() {
+          const currentTime = Date.now();
+          const expirationTime = this._tokenExpirationDate.getTime();
+
+          const token = currentTime > expirationTime ? null : this._token;
+          return token;
+        }
+      }
+
+  - Auth Service (auth.service.ts)
+  
+    - Add a user property for storing user data using rxjs BehaviorSubject
+    
+        user = new BehaviorSubject<User>(null);
+        
+    - Add a private method handleAuthToken() that receives server response. 
+      It should include logic to construct the user by extracting the data from the response object.
+      
+        private handleAuthToken(responseData: AuthResponseData) {
+          const { localId, email, idToken, expiresIn } = responseData;
+          const expiresInMS =
+            (expiresIn ? parseInt(expiresIn) : TOKEN_EXPIRATION_TIME_IN_SEC) * 1000;
+          const tokenExpirationDate = new Date(Date.now() + expiresInMS);
+
+          const user = new User(
+            localId,
+            email,
+            idToken,
+            tokenExpirationDate
+          );
+
+          this.user.next(user);
+        }
+
+    - Update both registerUser() and login() methods to invoke the handleAuthToken() method defined above using tap() rxjs operator.
+    
+        this.http.post<AuthResponseData>(`${environment.authApiUrl}:signInWithPassword?key=${environment.firebaseApiKey}`, authData)
+          .pipe(
+            catchError(this.handleError),
+            tap((responseData: AuthResponseData) => {
+              this.handleAuthToken(responseData);
+            })
+          )
+          .subscribe(
+            responseData => {
+              ...
+            },
+            error => {
+              ...
+            }
+          );
+          
+    - Update logout() method to set the user property to null
+
+        logout() {
+          this.user.next(null);
+          this.isAuthenticated = false;
+          this.authChange.next(false);
+          this.router.navigate(['/login']);
+
+          console.log('Logout successful.');
+        }

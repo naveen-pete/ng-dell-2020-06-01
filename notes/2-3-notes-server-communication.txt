@@ -1,0 +1,144 @@
+Server Communication - 3
+------------------------
+(Sending auth token to training service save and retrieve operations)
+
+1. Fetch Available Exercises - Add auth token
+
+  - Training Service (training.service.ts)
+  
+    - Inject AuthService into the constructor
+    
+        constructor(
+          private http: HttpClient,
+          private authService: AuthService
+        ) { }
+
+    - Update fetchAvailableExercises to add auth token
+      
+      - Use authService.user property
+        1. Use take() rxjs operator to take only 1 value
+        2. Use switchMap() rxjs operator to switch the operation to HttpClient.get() method after taking the user token
+          - Within the switchMap() function:
+            - Modify the HttpClient.get() request to include 2nd parameter for adding 'auth' query parameter
+            - Use User.token property to initialize the value for 'auth' query parameter
+        3. Use the existing map() operator for transforming the data
+        
+            fetchAvailableExercises() {
+              this.authService.user
+                .pipe(
+                  take(1),
+                  switchMap(user => {
+                    return this.http.get<Exercise[]>(
+                      `${environment.dataApiUrl}/available-exercises.json`,
+                      {
+                        params: new HttpParams().set('auth', user.token)
+                      }
+                    )
+                  }),
+                  map(responseData => {
+                    const exercises: Exercise[] = [];
+                    const keys = Object.keys(responseData);
+
+                    keys.forEach(key => {
+                      exercises.push({
+                        ...responseData[key],
+                        id: key
+                      });
+                    });
+
+                    return exercises;
+                  })
+                )
+                .subscribe(
+                  exercises => {
+                    this.availableExercises = exercises;
+                    this.availableExercisesChanged.next([...this.availableExercises]);
+                  },
+                  error => {
+                    console.log('Fetch available exercises failed.');
+                    console.log('Error:', error);
+                  }
+                );
+            }
+
+-----------------------------------------------------------------------------------------------
+2. Use Http Interceptor to attaching token
+
+  - Create an interceptor using Angular CLI command (specify target as auth folder)
+  
+      ng g interceptor auth/auth --skipTests=true
+      
+  - App Module
+  
+    - Import HTTP_INTERCEPTORS
+    
+        import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+    - Import our AuthInterceptor
+    
+        import { AuthInterceptor } from './auth/auth.interceptor';
+        
+    - Update providers array to include AuthInterceptor
+    
+        providers: [
+          { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        ]
+
+  - Auth Interceptor (auth.interceptor.ts)
+    
+    - Inject AuthService into the constructor
+    
+        constructor(private authService: AuthService) { }
+        
+    - Update intercept() method to include logic to add 'auth' query parameter
+        1. Use take() rxjs operator to take only 1 value
+        2. Use switchMap() rxjs operator to switch the operation to http request after taking the user token
+    
+        intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+          return this.authService.user.pipe(
+            take(1),
+            switchMap(user => {
+              if (!user) {
+                return next.handle(request);
+              }
+
+              const modifiedRequest = request.clone({
+                params: new HttpParams().set('auth', user.token)
+              });
+              return next.handle(modifiedRequest);
+            })
+          );
+        }
+        
+    - Update TrainingService.fetchAvailableExercises() method to previous implementation
+      - Remove AuthService injection from the constructor
+      - Remove all unused import references
+
+          fetchAvailableExercises() {
+            this.http.get<Exercise[]>(`${environment.dataApiUrl}/available-exercises.json`)
+              .pipe(
+                map(responseData => {
+                  const exercises: Exercise[] = [];
+                  const keys = Object.keys(responseData);
+
+                  keys.forEach(key => {
+                    exercises.push({
+                      ...responseData[key],
+                      id: key
+                    });
+                  });
+
+                  return exercises;
+                })
+              )
+              .subscribe(
+                exercises => {
+                  this.availableExercises = exercises;
+                  this.availableExercisesChanged.next([...this.availableExercises]);
+                },
+                error => {
+                  console.log('Fetch available exercises failed.');
+                  console.log('Error:', error);
+                }
+              );
+          }

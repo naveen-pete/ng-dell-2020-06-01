@@ -1,0 +1,37 @@
+<div class="mt-3">
+  <div class="card border-success" *ngIf="success">
+    <h5 class="card-header">{{parent}} successful!</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <span class="font-weight-bold">email:</span> {{ data.email }}
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">expiresIn:</span> {{ data.expiresIn }}
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">idToken:</span> {{ data.idToken }}
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">localId:</span> {{ data.localId }}
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">refreshToken:</span> {{ data.refreshToken }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="!success">
+    <h4 class="alert-heading">Signup failed.</h4>
+    <hr>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <span class="font-weight-bold">Error code:</span> {{ data.errorCode }}
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">Error Message:</span> {{ data.errorMessage }}
+      </li>
+    </ul>
+  </div>
+
+  <button class="btn btn-sm btn-outline-primary mt-2" (click)="onClear()">Clear</button>
+</div>
