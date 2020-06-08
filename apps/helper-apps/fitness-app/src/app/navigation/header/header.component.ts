@@ -12,12 +12,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Output() sidenavToggle = new EventEmitter<void>();
 
   isAuth = false;
-  authSubscription: Subscription;
+  private authSub: Subscription;
 
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.authSubscription = this.authService.user.subscribe(
+    this.authSub = this.authService.user.subscribe(
       user => {
         this.isAuth = !!user;
       }
@@ -29,7 +29,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.authSubscription.unsubscribe();
+    if (this.authSub) {
+      this.authSub.unsubscribe();
+    }
   }
 
   onLogout() {

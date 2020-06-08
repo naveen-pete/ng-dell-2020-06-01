@@ -1,0 +1,139 @@
+App Improvements - 1
+--------------------
+(Error notifications, Spinner control)
+
+1. Showing error notifications - Login and Signup
+
+  - Material Module
+    - Import SnackBarModule and add it to exports array
+
+        import { MatSnackBarModule } from "@angular/material/snack-bar";
+        
+  - UI Service
+    - Create a new folder - shared (within app folder)
+    - Create a new service UIService - filename - ui.service.ts - inside shared folder
+    
+    - Inject MatSnackBar into the constructor
+        
+        import { MatSnackBar } from '@angular/material/snack-bar';
+    
+        constructor(private snackbar: MatSnackBar) { }
+        
+    - Add showMessage() method
+    
+        showMessage(message: string, action: string = null, duration: number = 3000) {
+          this.snackbar.open(message, action, {
+            duration: duration
+          });
+        }
+
+  - Auth Service (auth.service.ts)
+  
+    - Inject UIService into the constructor
+    
+        constructor(
+          private http: HttpClient,
+          private router: Router,
+          private uiService: UIService
+        ) { }
+
+    - Update error handler functions in both registerUser() and login() methods to call UIService.showMessage() method
+
+      - registerUser()
+      
+          error => {
+            console.log('Register user failed.');
+            this.uiService.showMessage(error.message);
+          }
+
+      - login()
+      
+          error => {
+            console.log('Login failed.');
+            this.uiService.showMessage(error.message);
+          }
+
+--------------------------------------------------------------------
+2. Add a spinner - Auth Service, Login Component, Signup Component
+
+  - UI Service (ui.service.ts)
+  
+    - Add loadingStateChanged property
+    
+        import { Subject } from 'rxjs';
+    
+        loadingStateChanged = new Subject<boolean>();
+        
+    - Add showSpinner() method
+    
+        showSpinner() {
+          this.loadingStateChanged.next(true);
+        }
+
+    - Add hideSpinner() method
+  
+        hideSpinner() {
+          this.loadingStateChanged.next(false);
+        }
+
+  - Auth Service (auth.service.ts)
+  
+    - Update registerUser() and login() methods to call UIService.showSpinner() method before issuing http requests
+    - Update success handler and error handler functions to call UIService.hideSpinner() method
+    
+  - Login component
+
+    - login.component.ts
+  
+      - Add isLoading property
+      
+          isLoading = false;
+          
+      - Add loadingSub property to hold the subscription
+      
+          private loadingSub: Subscription;
+          
+      - Update ngOnInit() to subscribe UIService.loadingStateChanged event
+      
+          this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
+            this.isLoading = isLoading;
+          });
+
+      - Implement ngOnDestroy() to release the subscription
+
+          ngOnDestroy() {
+            if (this.loadingSub) {
+              this.loadingSub.unsubscribe();
+            }
+          }
+    
+    - login.component.html
+    
+      - Show spinner component when isLoading is true
+      - Hide button component when isLoading is true
+
+          <button *ngIf="!isLoading" mat-mini-fab color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon>login</mat-icon>
+          </button>
+          <mat-spinner *ngIf="isLoading"></mat-spinner>
+
+  - Signup Component
+  
+    - Repeat the same steps mentioned for Login component
+    
+--------------------------------------------------------------------
+3. Add a spinner - Training Service, New Training Component, Current Training Component
+
+  - Training Service
+  
+    - Repeat the same steps as Auth Service mentioned in the previous section (#2) for following methods:
+      - fetchAvailableExercises()
+      - fetchFinishedExercises()
+      - addDataToDatabase()
+    
+  - New Training Component
+  - Past Trainings Component
+  - Current Training Component
+  
+    - Repeat the same steps mentioned for Login component in the previous section (#2)
+

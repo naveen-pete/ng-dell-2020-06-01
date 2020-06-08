@@ -33,9 +33,10 @@
 
     <mat-checkbox name="agree" color="primary" formControlName="agree">I agree to terms and conditions</mat-checkbox>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
+    <button *ngIf="!isLoading" mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
       Signup
     </button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
 
   </form>
 </section>

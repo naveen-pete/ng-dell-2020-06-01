@@ -8,6 +8,7 @@ import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { AuthResponseData } from './auth-response-data.model';
 import { environment } from '../../environments/environment';
+import { UIService } from '../shared/ui.service';
 
 const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
 
@@ -21,10 +22,12 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private uiService: UIService
   ) { }
 
   registerUser(authData: AuthData) {
+    this.uiService.showSpinner();
     this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)
       .pipe(
         catchError(this.handleError),
@@ -34,16 +37,18 @@ export class AuthService {
       )
       .subscribe(
         () => {
+          this.uiService.hideSpinner();
           this.router.navigate(['/training']);
         },
         error => {
-          console.log('Register user failed.');
-          console.log('Error:', error.message);
+          this.uiService.hideSpinner();
+          this.uiService.showMessage(error.message);
         }
       );
   }
 
   login(authData: AuthData) {
+    this.uiService.showSpinner();
     this.http.post<AuthResponseData>(`${environment.authApiUrl}:signInWithPassword?key=${environment.firebaseApiKey}`, authData)
       .pipe(
         catchError(this.handleError),
@@ -53,11 +58,12 @@ export class AuthService {
       )
       .subscribe(
         () => {
+          this.uiService.hideSpinner();
           this.router.navigate(['/training']);
         },
         error => {
-          console.log('Login failed.');
-          console.log('Error:', error.message);
+          this.uiService.hideSpinner();
+          this.uiService.showMessage(error.message);
         }
       );
   }

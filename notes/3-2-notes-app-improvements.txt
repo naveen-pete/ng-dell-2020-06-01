@@ -1,0 +1,88 @@
+App Improvements - 2
+--------------------
+(Auth and Training Feature modules)
+
+1. Creating Auth Module
+
+  - Create AuthModule (auth.module.ts) within auth folder
+  
+  - Import and add following components to declarations[] array. Remove them from AppModule
+    - SignupComponent
+    - LoginComponent
+
+  - Import and add following modules to imports[] array.
+    - CommonModule
+    - ReactiveFormsModule
+    - HttpClientModule
+    - FlexLayoutModule
+    - MaterialModule
+
+  - Import AuthModule inside AppModule and add it to imports[] array
+
+----------------------------------------------------------------
+2. Creating Training Module
+
+  - Create TrainingModule (training.module.ts) within training folder
+  
+  - Import and add following components to declarations[] array. Remove them from AppModule
+    - TrainingComponent
+    - NewTrainingComponent
+    - PastTrainingsComponent
+    - CurrentTrainingComponent
+    - StopTrainingComponent
+    
+  - Import and add following modules to imports[] array.
+    - CommonModule
+    - FormsModule
+    - HttpClientModule
+    - FlexLayoutModule
+    - MaterialModule
+
+  - Import TrainingModule inside AppModule and add it to imports[] array
+  
+----------------------------------------------------------------
+3. Creating Shared Module
+
+  - Create SharedModule (shared.module.ts) within shared folder
+  
+  - Import and add following modules to exports[] array.
+    - CommonModule
+    - HttpClientModule
+    - FlexLayoutModule
+    - MaterialModule
+    
+  - Import SharedModule inside AuthModule and add it to imports[] array. 
+    Remove following modules from imports[] array. Remove their import statements
+    - CommonModule
+    - HttpClientModule
+    - FlexLayoutModule
+    - MaterialModule
+
+  - Import SharedModule inside TrainingModule and add it to imports[] array. 
+    Remove following modules from imports[] array. Remove their import statements
+    - CommonModule
+    - HttpClientModule
+    - FlexLayoutModule
+    - MaterialModule
+
+----------------------------------------------------------------
+4. Splitting up Routes
+
+  - Create AuthRoutingModule (auth-routing.module.ts) within auth folder
+  
+  - Import Routes and RouterModule
+  
+  - Define routes array, move routes for signup and login components from AppRoutingModule into this file
+  
+  - Use RouterModule.forChild() method to configure routes for this module
+  
+  - Add configured RouterModule to exports[] array
+  
+  - Import AuthRoutingModule inside AuthModule and add it to imports[] array
+  
+  - Remove SignupComponent and LoginComponent import statements from AppRoutingModule
+
+----------------------------------------------------------------
+5. Lazy loading of Training Module
+
+

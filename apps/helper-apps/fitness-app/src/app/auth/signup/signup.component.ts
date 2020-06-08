@@ -1,23 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import { AppValidators } from '../../common/app-validators';
 import { AuthService } from '../auth.service';
 import { AuthData } from '../auth-data.model';
+import { Subscription } from 'rxjs';
+import { UIService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   maxDate: Date;
   form: FormGroup;
+  isLoading = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  private loadingSub: Subscription;
+
+  constructor(
+    private authService: AuthService,
+    private uiService: UIService
+  ) { }
 
   ngOnInit(): void {
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
+
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
 
@@ -62,4 +73,11 @@ export class SignupComponent implements OnInit {
   get agree() {
     return this.form.get('agree');
   }
+
+  ngOnDestroy() {
+    if (this.loadingSub) {
+      this.loadingSub.unsubscribe();
+    }
+  }
+
 }

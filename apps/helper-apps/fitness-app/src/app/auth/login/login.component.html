@@ -19,9 +19,10 @@
       <mat-error>Password is required</mat-error>
     </mat-form-field>
 
-    <button mat-mini-fab color="primary" type="submit" [disabled]="form.invalid">
+    <button *ngIf="!isLoading" mat-mini-fab color="primary" type="submit" [disabled]="form.invalid">
       <mat-icon>login</mat-icon>
     </button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
 
   </form>
 </section>
