@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
+import { AuthResponseData } from './auth-response-data.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,34 +17,42 @@ export class AuthService {
 
   authChange = new Subject<boolean>();
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private http: HttpClient) { }
 
   registerUser(authData: AuthData) {
-    // ajax request that saves user information on the server
-    this.user = {
-      email: authData.email,
-      userId: Date.now().toString()
-    };
+    this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)
+      .subscribe(
+        responseData => {
+          console.log('Register user successful.');
+          console.log('responseData:', responseData);
 
-    this.authChange.next(true);
-    this.isAuthenticated = true;
-    this.router.navigate(['/']);
-
-    console.log('Register user successful.');
+          this.isAuthenticated = true;
+          this.authChange.next(true);
+          // this.router.navigate(['/training']);
+        },
+        error => {
+          console.log('Register user failed.');
+          console.log('Error:', error.message);
+        }
+      );
   }
 
   login(authData: AuthData) {
-    // ajax request that logs the user into the app
-    this.user = {
-      email: authData.email,
-      userId: Date.now().toString()
-    };
+    this.http.post<AuthResponseData>(`${environment.authApiUrl}:signInWithPassword?key=${environment.firebaseApiKey}`, authData)
+      .subscribe(
+        responseData => {
+          console.log('Login successful.');
+          console.log('responseData:', responseData);
 
-    this.authChange.next(true);
-    this.isAuthenticated = true;
-    this.router.navigate(['/training']);
-
-    console.log('Login successful.');
+          this.isAuthenticated = true;
+          this.authChange.next(true);
+          // this.router.navigate(['/training']);
+        },
+        error => {
+          console.log('Login failed.');
+          console.log('Error:', error.message);
+        }
+      );
   }
 
   logout() {
@@ -54,7 +65,7 @@ export class AuthService {
   }
 
   isAuth() {
-    return this.isAuthenticated;
+    return true;
   }
 
 }

@@ -40,7 +40,8 @@ export class SignupComponent implements OnInit {
 
     const userInfo: AuthData = {
       email: this.form.value.email,
-      password: this.form.value.password
+      password: this.form.value.password,
+      returnSecureToken: true
     };
 
     this.authService.registerUser(userInfo);
