@@ -12,15 +12,16 @@ export class SidenavListComponent implements OnInit, OnDestroy {
   @Output() closeSidenav = new EventEmitter<void>();
 
   isAuth = false;
-  authSubscription: Subscription;
+  private authSub: Subscription;
 
   constructor(private authService: AuthService) { }
 
   ngOnInit() {
-    this.isAuth = this.authService.isAuth();
-    this.authSubscription = this.authService.authChange.subscribe(authStatus => {
-      this.isAuth = authStatus;
-    });
+    this.authSub = this.authService.user.subscribe(
+      user => {
+        this.isAuth = !!user;
+      }
+    );
   }
 
   onClose() {
@@ -33,7 +34,9 @@ export class SidenavListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.authSubscription.unsubscribe();
+    if (this.authSub) {
+      this.authSub.unsubscribe();
+    }
   }
 
 }

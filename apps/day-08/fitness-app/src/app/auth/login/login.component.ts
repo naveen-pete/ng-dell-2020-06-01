@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { AuthData } from '../auth-data.model';
 import { AuthService } from '../auth.service';
-import { UIService } from 'src/app/shared/ui.service';
+import { UIService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +13,8 @@ import { UIService } from 'src/app/shared/ui.service';
 })
 export class LoginComponent implements OnInit, OnDestroy {
   form: FormGroup;
-
   isLoading = false;
+
   private loadingSub: Subscription;
 
   constructor(
@@ -23,11 +23,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.loadingSub = this.uiService.loadingStateChanged.subscribe(
-      isLoading => {
-        this.isLoading = isLoading;
-      }
-    );
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
 
     this.form = new FormGroup({
       email: new FormControl('', { validators: [Validators.required, Validators.email] }),
@@ -47,7 +45,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     };
 
     this.authService.login(userInfo);
-
   }
 
   get email() {

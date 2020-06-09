@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 
@@ -8,10 +8,10 @@ import { Subject } from 'rxjs';
 export class UIService {
   loadingStateChanged = new Subject<boolean>();
 
-  constructor(private snackBar: MatSnackBar) { }
+  constructor(private snackbar: MatSnackBar) { }
 
   showMessage(message: string, action: string = null, duration: number = 3000) {
-    this.snackBar.open(message, action, {
+    this.snackbar.open(message, action, {
       duration: duration
     });
   }
@@ -23,4 +23,5 @@ export class UIService {
   hideSpinner() {
     this.loadingStateChanged.next(false);
   }
+
 }

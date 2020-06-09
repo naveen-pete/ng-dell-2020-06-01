@@ -12,19 +12,19 @@ import { Exercise } from '../exercise.model';
   templateUrl: './past-trainings.component.html',
   styleUrls: ['./past-trainings.component.css']
 })
-export class PastTrainingsComponent implements OnInit, OnInit {
+export class PastTrainingsComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+  private exerciseSub: Subscription;
 
   dataSource = new MatTableDataSource<Exercise>();
   displayedColumns = ['date', 'name', 'duration', 'calories', 'state'];
 
-  private exerciseSubscription: Subscription;
-
   constructor(private trainingService: TrainingService) { }
 
   ngOnInit() {
-    this.exerciseSubscription = this.trainingService.finishedExercisesChanged.subscribe(
+    this.exerciseSub = this.trainingService.finishedExercisesChanged.subscribe(
       (exercises: Exercise[]) => {
         this.dataSource.data = exercises;
       }
@@ -41,8 +41,8 @@ export class PastTrainingsComponent implements OnInit, OnInit {
   }
 
   ngOnDestroy() {
-    if (this.exerciseSubscription) {
-      this.exerciseSubscription.unsubscribe();
+    if (this.exerciseSub) {
+      this.exerciseSub.unsubscribe();
     }
   }
 

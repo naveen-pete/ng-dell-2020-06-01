@@ -1,24 +1,34 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 import { StopTrainingComponent } from '../stop-training/stop-training.component';
 import { TrainingService } from '../training.service';
+import { UIService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-current-training',
   templateUrl: './current-training.component.html',
   styleUrls: ['./current-training.component.css']
 })
-export class CurrentTrainingComponent implements OnInit {
-  // @Output() trainingExit = new EventEmitter<void>();
-
+export class CurrentTrainingComponent implements OnInit, OnDestroy {
   progress = 0;
   timer: number;
 
-  constructor(public dialog: MatDialog, private trainingService: TrainingService) { }
+  isLoading = false;
 
+  private loadingSub: Subscription;
+
+  constructor(
+    public dialog: MatDialog,
+    private trainingService: TrainingService,
+    private uiService: UIService
+  ) { }
 
   ngOnInit() {
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(
+      isLoading => this.isLoading = isLoading
+    );
     this.startOrResumeTimer();
   }
 
@@ -28,7 +38,6 @@ export class CurrentTrainingComponent implements OnInit {
     this.timer = window.setInterval(() => {
       this.progress = this.progress + 1;
       if (this.progress >= 100) {
-        // Exercise is 100% complete
         this.trainingService.completeExercise();
         clearInterval(this.timer);
       }
@@ -46,13 +55,18 @@ export class CurrentTrainingComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result) {
-          // Exercise cancelled in between
           this.trainingService.cancelExercise(this.progress);
         } else {
           this.startOrResumeTimer();
         }
       }
     );
+  }
+
+  ngOnDestroy() {
+    if (this.loadingSub) {
+      this.loadingSub.unsubscribe();
+    }
   }
 
 }

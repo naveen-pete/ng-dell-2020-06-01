@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 
@@ -17,7 +17,8 @@ export class AuthGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     return this.authService.user.pipe(
       take(1),
@@ -29,12 +30,5 @@ export class AuthGuard implements CanActivate {
       })
     );
 
-    // if (this.authService.isAuth()) {
-    //   return true;
-    // }
-
-    // this.router.navigate(['/login']);
-    // return false;
   }
-
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
-import { Exercise } from './exercise.model';
 import { environment } from '../../environments/environment';
-import { AuthService } from '../auth/auth.service';
-import { User } from '../auth/user.model';
+import { Exercise } from './exercise.model';
+import { UIService } from '../shared/ui.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +21,11 @@ export class TrainingService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private uiService: UIService
   ) { }
 
   fetchAvailableExercises() {
+    this.uiService.showSpinner();
     this.http.get<Exercise[]>(`${environment.dataApiUrl}/available-exercises.json`)
       .pipe(
         map(responseData => {
@@ -45,11 +45,14 @@ export class TrainingService {
       .subscribe(
         exercises => {
           this.availableExercises = exercises;
+          this.uiService.hideSpinner();
           this.availableExercisesChanged.next([...this.availableExercises]);
         },
         error => {
           console.log('Fetch available exercises failed.');
-          console.log('Error:', error);
+          this.uiService.hideSpinner();
+          this.uiService.showMessage('Failed to fetch available exercises.');
+          this.availableExercisesChanged.next(null);
         }
       );
   }
@@ -105,25 +108,27 @@ export class TrainingService {
         },
         error => {
           console.log('Fetch finished exercises failed.');
-          console.log('Error:', error);
+          this.uiService.showMessage('Failed to fetch finished exercises.');
         }
       );
   }
 
   private addDataToDatabase(exercise: Exercise) {
+    this.uiService.showSpinner();
     this.http.post(`${environment.dataApiUrl}/finished-exercises.json`, exercise)
       .subscribe(
         () => {
-          console.log('Save exercise successful.');
           this.runningExercise = null;
           this.runningExerciseChanged.next(null);
+
+          this.uiService.hideSpinner();
         },
         error => {
           console.log('Save exercise failed.');
-          console.log('Error:', error);
+
+          this.uiService.hideSpinner();
+          this.uiService.showMessage('Failed to save finished exercise.');
         }
       );
   }
-
-
 }

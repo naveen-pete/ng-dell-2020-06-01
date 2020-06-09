@@ -1,23 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
-import { AppValidators } from '../../common/app-validators';
+import { AppValidators } from '../../shared/app-validators';
 import { AuthService } from '../auth.service';
 import { AuthData } from '../auth-data.model';
+import { UIService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   maxDate: Date;
   form: FormGroup;
+  isLoading = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  private loadingSub: Subscription;
+
+  constructor(
+    private authService: AuthService,
+    private uiService: UIService
+  ) { }
 
   ngOnInit(): void {
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
+
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
 
@@ -26,7 +37,7 @@ export class SignupComponent implements OnInit {
 
   private buildForm() {
     this.form = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
+      email: new FormControl('', [Validators.required, Validators.email, AppValidators.isEmailTakenSync]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       birthdate: new FormControl('', Validators.required),
       agree: new FormControl(false, [Validators.requiredTrue])
@@ -45,7 +56,6 @@ export class SignupComponent implements OnInit {
     };
 
     this.authService.registerUser(userInfo);
-    // this.router.navigate(['/']);
   }
 
   get email() {
@@ -63,4 +73,11 @@ export class SignupComponent implements OnInit {
   get agree() {
     return this.form.get('agree');
   }
+
+  ngOnDestroy() {
+    if (this.loadingSub) {
+      this.loadingSub.unsubscribe();
+    }
+  }
+
 }

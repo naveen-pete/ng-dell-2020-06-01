@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Subject, throwError, Observable, BehaviorSubject } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { BehaviorSubject, throwError, Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { AuthResponseData } from './auth-response-data.model';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../environments/environment';
 import { UIService } from '../shared/ui.service';
 
 const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
@@ -17,18 +17,17 @@ const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
 })
 export class AuthService {
   private autoLogoutTimer: number;
-  private isAuthenticated: boolean = false;
 
   user = new BehaviorSubject<User>(null);
-  authChange = new Subject<boolean>();
 
   constructor(
-    private router: Router,
     private http: HttpClient,
+    private router: Router,
     private uiService: UIService
   ) { }
 
   registerUser(authData: AuthData) {
+    this.uiService.showSpinner();
     this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)
       .pipe(
         catchError(this.handleError),
@@ -37,13 +36,12 @@ export class AuthService {
         })
       )
       .subscribe(
-        (responseData: AuthResponseData) => {
-          this.isAuthenticated = true;
-          this.authChange.next(true);
+        () => {
+          this.uiService.hideSpinner();
           this.router.navigate(['/training']);
         },
         error => {
-          console.log('Register user failed.');
+          this.uiService.hideSpinner();
           this.uiService.showMessage(error.message);
         }
       );
@@ -59,14 +57,11 @@ export class AuthService {
         })
       )
       .subscribe(
-        (responseData: AuthResponseData) => {
-          this.isAuthenticated = true;
-          this.authChange.next(true);
+        () => {
           this.uiService.hideSpinner();
           this.router.navigate(['/training']);
         },
         error => {
-          console.log('Login failed.');
           this.uiService.hideSpinner();
           this.uiService.showMessage(error.message);
         }
@@ -75,10 +70,10 @@ export class AuthService {
 
   autoLogin() {
     const userData: {
-      id: string,
-      email: string,
-      _token: string,
-      _tokenExpirationDate: string
+      id: string;
+      email: string;
+      _token: string;
+      _tokenExpirationDate: string;
     } = JSON.parse(localStorage.getItem('userData'));
 
     if (!userData) {
@@ -94,32 +89,9 @@ export class AuthService {
     );
     if (user.token) {
       this.user.next(user);
-      this.isAuthenticated = true;
-      this.authChange.next(true);
-
       const expirationDuration = tokenExpirationDate.getTime() - Date.now();
       this.autoLogout(expirationDuration);
     }
-  }
-
-
-  logout() {
-    this.user = null;
-    this.authChange.next(false);
-    this.isAuthenticated = false;
-    this.router.navigate(['/login']);
-    localStorage.removeItem('userData');
-
-    if (this.autoLogoutTimer) {
-      window.clearTimeout(this.autoLogoutTimer);
-      this.autoLogoutTimer = null
-    }
-
-    console.log('Logout successful.');
-  }
-
-  isAuth() {
-    return this.isAuthenticated;
   }
 
   private autoLogout(expirationDuration: number) {
@@ -129,6 +101,20 @@ export class AuthService {
       },
       expirationDuration
     );
+  }
+
+  logout() {
+    this.user.next(null);
+    localStorage.removeItem('userData');
+
+    if (this.autoLogoutTimer) {
+      window.clearTimeout(this.autoLogoutTimer);
+      this.autoLogoutTimer = null;
+    }
+
+    this.router.navigate(['/login']);
+
+    console.log('Logout successful.');
   }
 
   private handleAuthToken(responseData: AuthResponseData) {
@@ -145,8 +131,8 @@ export class AuthService {
     );
 
     this.user.next(user);
-    localStorage.setItem('userData', JSON.stringify(user));
     this.autoLogout(expiresInMS);
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   // NOTE:
