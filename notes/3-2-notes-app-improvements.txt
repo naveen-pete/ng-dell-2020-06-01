@@ -13,7 +13,6 @@ App Improvements - 2
   - Import and add following modules to imports[] array.
     - CommonModule
     - ReactiveFormsModule
-    - HttpClientModule
     - FlexLayoutModule
     - MaterialModule
 
@@ -34,7 +33,6 @@ App Improvements - 2
   - Import and add following modules to imports[] array.
     - CommonModule
     - FormsModule
-    - HttpClientModule
     - FlexLayoutModule
     - MaterialModule
 
@@ -47,21 +45,18 @@ App Improvements - 2
   
   - Import and add following modules to exports[] array.
     - CommonModule
-    - HttpClientModule
     - FlexLayoutModule
     - MaterialModule
     
   - Import SharedModule inside AuthModule and add it to imports[] array. 
     Remove following modules from imports[] array. Remove their import statements
     - CommonModule
-    - HttpClientModule
     - FlexLayoutModule
     - MaterialModule
 
   - Import SharedModule inside TrainingModule and add it to imports[] array. 
     Remove following modules from imports[] array. Remove their import statements
     - CommonModule
-    - HttpClientModule
     - FlexLayoutModule
     - MaterialModule
 
@@ -74,6 +69,8 @@ App Improvements - 2
   
   - Define routes array, move routes for signup and login components from AppRoutingModule into this file
   
+  - Include import statements for signup and login components
+  
   - Use RouterModule.forChild() method to configure routes for this module
   
   - Add configured RouterModule to exports[] array
@@ -85,4 +82,97 @@ App Improvements - 2
 ----------------------------------------------------------------
 5. Lazy loading of Training Module
 
+  - Create TrainingRoutingModule (training-routing.module.ts) within training folder
+  
+  - Import Routes and RouterModule
+  
+  - Define routes array, move routes for training component from AppRoutingModule into this file
+  
+  - Include import statements for training component and auth guard
+  
+  - Use RouterModule.forChild() method to configure routes for this module
+  
+  - Add configured RouterModule to exports[] array
+  
+  - Import TrainingRoutingModule inside TrainingModule and add it to imports[] array
+  
+  - In AppModule, 
+    - remove the import statement of TrainingModule
+    - remove the entry of TrainingModule from imports[] array
+    
+  - In AppRoutingModule, 
+    - add a route for training module
+    
+        const routes: Routes = [
+          { path: '', component: WelcomeComponent },
+          {
+            path: 'training',
+            loadChildren: () => import('./training/training.module').then(m => m.TrainingModule)
+          }
+          // { path: 'training', loadChildren: './training/training.module#TrainingModule' }
+        ];
 
+  - In TrainingRoutingModule,
+    - for the training route definition, change the path from 'training' to ''
+
+        const routes: Routes = [
+          { path: '', component: TrainingComponent, canActivate: [AuthGuard] }
+        ];
+
+----------------------------------------------------------------
+6. Moving and Adjusting Auth Guard
+
+  - In TrainingRoutingModule, 
+    - remove canActivate property and AuthGuard from the route definition
+    
+        const routes: Routes = [
+          { path: '', component: TrainingComponent }
+        ];
+    
+    - remove the import statement for AuthGuard
+    
+  - In AppRoutingModule,
+    - add canLoad property to training route definition
+    - mention AuthGuard for canLoad property within the array
+    
+        const routes: Routes = [
+          { path: '', component: WelcomeComponent },
+          {
+            path: 'training',
+            loadChildren: () => import('./training/training.module').then(m => m.TrainingModule),
+            canLoad: [AuthGuard]
+          }
+        ];
+
+  - In AuthGuard,
+    - implement canLoad interface and canLoad method
+    
+        @Injectable({
+          providedIn: 'root'
+        })
+        export class AuthGuard implements CanActivate, CanLoad {
+          constructor(private authService: AuthService, private router: Router) { }
+
+          canActivate(
+            next: ActivatedRouteSnapshot,
+            state: RouterStateSnapshot
+          ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+            return this.checkIfAuthenticated();
+          }
+
+          canLoad(route: Route, segments: UrlSegment[]): boolean | Observable<boolean> | Promise<boolean> {
+            return this.checkIfAuthenticated();
+          }
+
+          private checkIfAuthenticated() {
+            return this.authService.user.pipe(
+              take(1),
+              map(user => {
+                if (user) {
+                  return true;
+                }
+                return this.router.createUrlTree(['/login']);
+              })
+            );
+          }
+        }

@@ -62,6 +62,9 @@ Links
     
 - Communicating with backend services using HTTP
   - https://angular.io/guide/http
+  
+- Lazy-loading feature modules
+  - https://angular.io/guide/lazy-loading-ngmodules
 
 -------------------------------------------------------------
 - Angular Material
