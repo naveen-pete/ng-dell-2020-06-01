@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
 
 import { Exercise } from './exercise.model';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../auth/auth.service';
+import { User } from '../auth/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +20,13 @@ export class TrainingService {
   runningExerciseChanged = new Subject<Exercise>();
   finishedExercisesChanged = new Subject<Exercise[]>();
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   fetchAvailableExercises() {
-    return this.http.get<Exercise[]>(`${environment.dataApiUrl}/available-exercises.json`)
+    this.http.get<Exercise[]>(`${environment.dataApiUrl}/available-exercises.json`)
       .pipe(
         map(responseData => {
           const exercises: Exercise[] = [];

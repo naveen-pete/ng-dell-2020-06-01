@@ -40,16 +40,16 @@ export const doWork = () => {
   console.log('begin');
 
   getUser('krish')
-  // .then((user: any) => {
-  //   console.log('user:', user);
-  //   return getPosts(user.id);
-  // })
-  // .then((posts: any) => {
-  //   console.log('posts for user:', posts);
-  // })
-  // .catch((error) => {
-  //   console.log('Error:', error);
-  // });
+    .then((user: any) => {
+      console.log('user:', user);
+      return getPosts(user.id);
+    })
+    .then((posts: any) => {
+      console.log('posts for user:', posts);
+    })
+    .catch((error) => {
+      console.log('Error:', error);
+    });
 
   console.log('end');
 };
