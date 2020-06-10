@@ -60,6 +60,9 @@ Links
   - Observables compared to other techniques
     - https://angular.io/guide/comparing-observables
     
+  - DebounceTime example
+    - https://angular.io/tutorial/toh-pt6#search-by-name
+    
 - Communicating with backend services using HTTP
   - https://angular.io/guide/http
   
