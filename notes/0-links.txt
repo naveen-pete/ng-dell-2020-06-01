@@ -84,14 +84,29 @@ Links
 -------------------------------------------------------------
 - Firebase
 
-- Installation & Setup for REST API
-  - https://firebase.google.com/docs/database/rest/start
+  - Installation & Setup for REST API
+    - https://firebase.google.com/docs/database/rest/start
 
-- Firebase Database REST API
-  - https://firebase.google.com/docs/reference/rest/database
+  - Firebase Database REST API
+    - https://firebase.google.com/docs/reference/rest/database
 
-- Firebase Auth REST API
-  - https://firebase.google.com/docs/reference/rest/auth
+  - Firebase Auth REST API
+    - https://firebase.google.com/docs/reference/rest/auth
 
-- Authenticate REST Requests
-  - https://firebase.google.com/docs/database/rest/auth
+  - Authenticate REST Requests
+    - https://firebase.google.com/docs/database/rest/auth
+  
+-------------------------------------------------------------
+- NgRx
+  
+  - Redux DevTools Chrome Extension
+    - https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en
+    
+  - Redux DevTools Extension GitHub Repository
+    - https://github.com/zalmoxisus/redux-devtools-extension
+    
+  - What is NgRx?
+    - https://ngrx.io/docs
+    
+  - NgRx Store
+    - https://ngrx.io/guide/store

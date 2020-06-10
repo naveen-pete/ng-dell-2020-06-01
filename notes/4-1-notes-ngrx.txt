@@ -1,0 +1,256 @@
+NgRx - 1
+--------
+
+1. Install NgRx Store package
+
+      npm install @ngrx/store
+  
+  - NgRx Dev Tools (for easier debugging in dev environment)
+    
+    - install redux devtools extensions in chrome
+    
+        https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en
+        https://github.com/zalmoxisus/redux-devtools-extension
+      
+    - install ngrx store devtools
+    
+        npm install @ngrx/store-devtools
+        
+    - App Module
+      
+      - Import StoreDevToolsModule and add it to imports[] array
+      
+          import { StoreDevToolsModule } from '@ngrx/store-devtools';
+          import { environment } from '../enviroments/environment'
+          
+          imports: [
+            ...
+            // Instrumentation must be imported after importing StoreModule (config is optional)
+            StoreDevtoolsModule.instrument({
+              logOnly: environment.production, // Restrict extension to log-only mode
+            })
+          ];
+
+-----------------------------------------------------------
+2. UI Actions
+  - Create a 'store' folder within 'shared' folder
+  - Create 'ui.actions.ts' file within 'shared/store' folder
+
+      import { Action } from '@ngrx/store';
+
+      export const START_LOADING = 'UI.START_LOADING';
+      export const STOP_LOADING = 'UI.STOP_LOADING';
+
+      export class StartLoading implements Action {
+        readonly type = START_LOADING;
+      }
+
+      export class StopLoading implements Action {
+        readonly type = STOP_LOADING;
+      }
+
+      export type UIActions = StartLoading | StopLoading;
+
+-----------------------------------------------------------
+3. UI Reducer (ui.reducer.ts)
+  - Create 'ui.reducer.ts' file within 'shared/store' folder
+  
+      import { UIActions, START_LOADING, STOP_LOADING } from "../ui.actions";
+
+      export interface State {
+        isLoading: boolean;
+      }
+
+      const initialState: State = {
+        isLoading: false
+      };
+
+      export function uiReducer(state = initialState, action: UIActions): State {
+        switch (action.type) {
+          case START_LOADING:
+            return {
+              isLoading: true
+            };
+
+          case STOP_LOADING:
+            return {
+              isLoading: false
+            };
+
+          default:
+            return state;
+        }
+      }
+      
+      export const getIsLoading = (state: State) => state.isLoading;
+
+-----------------------------------------------------------
+4. App Reducer
+  - Create 'app.reducer.ts' file within 'app' folder
+  
+      import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
+      
+      import * as fromUi from './shared/store/ui.reducer';
+      
+      export interface State {
+        ui: fromUi.State;
+      };
+
+      export const appReducer: ActionReducerMap<State> = {
+        ui: fromUi.uiReducer
+      };
+
+      const getUiState = createFeatureSelector<fromUi.State>('ui');
+      export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading);
+
+-----------------------------------------------------------
+5. App Module
+
+  - Import StoreModule
+      
+      import { StoreModule } from "@ngrx/store";
+      
+  - Import uiReducer
+  
+      import { appReducer } from './app.reducer';
+      
+  - Add StoreModule to imports[] array
+  
+      imports: [
+        ...
+        StoreModule.forRoot(appReducer)
+        ...
+      ]
+
+-----------------------------------------------------------
+6. Dispatching Actions - Auth Service (auth.service.ts)
+  
+  - Import NgRx store
+  
+      import { Store } from '@ngrx/store';
+
+  - Import State from app.reducer.ts
+  
+      import { State } from "../app.reducer";
+      
+  - Import StartLoading and StopLoading action classes from ui.actions.ts
+  
+      import { StartLoading, StopLoading } from "../shared/store/ui.actions";
+      
+  - Inject NgRx Store into the constructor
+  
+        constructor(
+          ...
+          private store: Store<State>
+        ) { }
+
+  - Update registerUser() and login() methods
+    - Replace 
+    
+        this.uiService.showSpinner();
+        
+      with
+      
+        this.store.dispatch(new StartLoading());
+        
+    - Replace 
+    
+        this.uiService.hideSpinner();
+        
+      with
+        
+        this.store.dispatch(new StopLoading());
+
+-----------------------------------------------------------
+7. Dispatching Actions - Training Service (training.service.ts)
+
+  - Import NgRx store
+  
+      import { Store } from '@ngrx/store';
+
+  - Import State from app.reducer.ts
+  
+      import { State } from "../app.reducer";
+      
+  - Import StartLoading and StopLoading action classes from ui.actions.ts
+  
+      import { StartLoading, StopLoading } from "../shared/store/ui.actions";
+      
+  - Inject NgRx Store into the constructor
+  
+        constructor(
+          ...
+          private store: Store<State>
+        ) { }
+
+  - Update fetchAvailableExercises() and addDataToDatabase() methods
+    - Replace 
+    
+        this.uiService.showSpinner();
+        
+      with
+      
+        this.store.dispatch(new StartLoading());
+        
+    - Replace 
+    
+        this.uiService.hideSpinner();
+        
+      with
+        
+        this.store.dispatch(new StopLoading());
+
+
+-----------------------------------------------------------
+8. Subscribing to Store - Login component
+
+  - Login Component
+  
+    - Import NgRx Store
+    
+        import { Store } from "@ngrx/store";
+        
+    - Import State from app.reducer.ts
+    
+        import { State, getIsLoading } from "../../app.reducer";
+        
+    - Rename isLoading property to isLoading$
+      - change its type from boolean to Observable<boolean>
+
+    - Inject NgRx Store into the constructor
+    
+        constructor(
+          ...
+          private store: Store<State>
+        ) { }
+          
+    - Update ngOnInit()
+    
+        this.isLoading$ = this.store.select(getIsLoading);
+
+    - Remove ngOnDestroy()
+    
+    - Remove unused import statements
+    
+    - HTML changes
+    
+        <button *ngIf="!(isLoading$ | async)" type="submit" mat-raised-button color="primary"
+          [disabled]="loginForm.invalid">
+          Submit
+        </button>
+        <mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
+
+-----------------------------------------------------------
+9. Subscribing to Store - Signup component
+
+  - Follow the same steps as mentioned in Login Component in the previous section (#8) 
+
+-----------------------------------------------------------
+10. Subscribing to Store - New Training component
+
+  - Follow the same steps as mentioned in Login Component in the previous section (#8)
+
+-----------------------------------------------------------
+11. Subscribing to Store - Current Training component
+
+  - Follow the same steps as mentioned in Login Component in the previous section (#8)
