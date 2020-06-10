@@ -3,12 +3,16 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, throwError, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { AuthResponseData } from './auth-response-data.model';
 import { environment } from '../../environments/environment';
 import { UIService } from '../shared/ui.service';
+import { State } from '../app.reducer';
+import { StartLoading, StopLoading } from '../shared/store/loading.actions';
+
 
 const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
 
@@ -23,11 +27,13 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<State>
   ) { }
 
   registerUser(authData: AuthData) {
-    this.uiService.showSpinner();
+    this.store.dispatch(new StartLoading());
+
     this.http.post<AuthResponseData>(`${environment.authApiUrl}:signUp?key=${environment.firebaseApiKey}`, authData)
       .pipe(
         catchError(this.handleError),
@@ -37,18 +43,18 @@ export class AuthService {
       )
       .subscribe(
         () => {
-          this.uiService.hideSpinner();
+          this.store.dispatch(new StopLoading());
           this.router.navigate(['/training']);
         },
         error => {
-          this.uiService.hideSpinner();
+          this.store.dispatch(new StopLoading());
           this.uiService.showMessage(error.message);
         }
       );
   }
 
   login(authData: AuthData) {
-    this.uiService.showSpinner();
+    this.store.dispatch(new StartLoading());
     this.http.post<AuthResponseData>(`${environment.authApiUrl}:signInWithPassword?key=${environment.firebaseApiKey}`, authData)
       .pipe(
         catchError(this.handleError),
@@ -58,11 +64,11 @@ export class AuthService {
       )
       .subscribe(
         () => {
-          this.uiService.hideSpinner();
+          this.store.dispatch(new StopLoading());
           this.router.navigate(['/training']);
         },
         error => {
-          this.uiService.hideSpinner();
+          this.store.dispatch(new StopLoading());
           this.uiService.showMessage(error.message);
         }
       );

@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import { AppValidators } from '../../shared/app-validators';
 import { AuthService } from '../auth.service';
 import { AuthData } from '../auth-data.model';
-import { UIService } from '../../shared/ui.service';
+import { State } from '../../app.reducer';
 
 @Component({
   selector: 'app-signup',
@@ -21,12 +22,12 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private uiService: UIService
+    private store: Store<State>
   ) { }
 
   ngOnInit(): void {
-    this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
-      this.isLoading = isLoading;
+    this.loadingSub = this.store.select('loading').subscribe(loading => {
+      this.isLoading = loading;
     });
 
     this.maxDate = new Date();
