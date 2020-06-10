@@ -8,16 +8,17 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { take, switchMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
-import { AuthService } from './auth.service';
+import { State } from '../app.reducer';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) { }
+  constructor(private store: Store<State>) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return this.authService.user.pipe(
+    return this.store.select('user').pipe(
       take(1),
       switchMap(user => {
         if (!user) {

@@ -12,7 +12,7 @@ import { environment } from '../../environments/environment';
 import { UIService } from '../shared/ui.service';
 import { State } from '../app.reducer';
 import { StartLoading, StopLoading } from '../shared/store/loading.actions';
-
+import { SetUser, ClearUser } from "./store/user.actions";
 
 const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
 
@@ -21,8 +21,6 @@ const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
 })
 export class AuthService {
   private autoLogoutTimer: number;
-
-  user = new BehaviorSubject<User>(null);
 
   constructor(
     private http: HttpClient,
@@ -94,7 +92,14 @@ export class AuthService {
       tokenExpirationDate
     );
     if (user.token) {
-      this.user.next(user);
+      this.store.dispatch(
+        new SetUser(
+          userData.id,
+          userData.email,
+          userData._token,
+          tokenExpirationDate
+        )
+      );
       const expirationDuration = tokenExpirationDate.getTime() - Date.now();
       this.autoLogout(expirationDuration);
     }
@@ -110,7 +115,7 @@ export class AuthService {
   }
 
   logout() {
-    this.user.next(null);
+    this.store.dispatch(new ClearUser());
     localStorage.removeItem('userData');
 
     if (this.autoLogoutTimer) {
@@ -129,16 +134,24 @@ export class AuthService {
       (expiresIn ? parseInt(expiresIn) : TOKEN_EXPIRATION_TIME_IN_SEC) * 1000;
     const tokenExpirationDate = new Date(Date.now() + expiresInMS);
 
+    this.autoLogout(expiresInMS);
+
     const user = new User(
       localId,
       email,
       idToken,
       tokenExpirationDate
     );
-
-    this.user.next(user);
-    this.autoLogout(expiresInMS);
     localStorage.setItem('userData', JSON.stringify(user));
+
+    this.store.dispatch(
+      new SetUser(
+        localId,
+        email,
+        idToken,
+        tokenExpirationDate
+      )
+    );
   }
 
   // NOTE:
