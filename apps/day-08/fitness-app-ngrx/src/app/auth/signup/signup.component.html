@@ -1,0 +1,42 @@
+<section>
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
+
+    <h2>Signup</h2>
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput type="text" name="email" placeholder="enter email" formControlName="email">
+      <mat-hint>{{ email.pending ? 'Verifying email...' : 'Your email'}}</mat-hint>
+      <mat-error *ngIf="email.hasError('required')">Email is required</mat-error>
+      <mat-error *ngIf="email.hasError('email')">Email is invalid</mat-error>
+      <mat-error *ngIf="email.hasError('isEmailTaken')">This email is already registered</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" name="password" placeholder="enter password" autocomplete="false"
+        formControlName="password">
+      <mat-hint>Your password</mat-hint>
+      <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+      <mat-error *ngIf="password.hasError('minlength')">Password should contain at least 6 characters</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Date of Birth</mat-label>
+      <input matInput [matDatepicker]="picker" name="birthdate" placeholder="enter date of birth"
+        formControlName="birthdate" [max]="maxDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-hint>Your date of birth</mat-hint>
+      <mat-error>Date of birth is required</mat-error>
+    </mat-form-field>
+
+    <mat-checkbox name="agree" color="primary" formControlName="agree">I agree to terms and conditions</mat-checkbox>
+
+    <button *ngIf="!isLoading" mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
+      Signup
+    </button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+
+  </form>
+</section>
