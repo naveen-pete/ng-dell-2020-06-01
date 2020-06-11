@@ -3,7 +3,11 @@ import * as Actions from "./user.actions";
 
 const initialState: User = null;
 
-export function userReducer(state: User = initialState, action: Actions.UserActions): User | null {
+export function userReducer(
+  state = initialState,
+  action: Actions.UserActions
+): User | null {
+
   switch (action.type) {
     case Actions.SET_USER:
       const { id, email, token, tokenExpirationDate } = action.payload;
@@ -21,4 +25,5 @@ export function userReducer(state: User = initialState, action: Actions.UserActi
     default:
       return state;
   }
+
 }

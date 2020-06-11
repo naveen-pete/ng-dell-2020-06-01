@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { environment } from '../../environments/environment';
 import { Exercise } from './exercise.model';
 import { UIService } from '../shared/ui.service';
+import { State } from '../app.reducer';
+import { SetCurrentExercise, ClearCurrentExercise } from './store/current-exercise.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +16,15 @@ import { UIService } from '../shared/ui.service';
 export class TrainingService {
 
   private availableExercises: Exercise[] = [];
-  private runningExercise: Exercise;
+  private currentExercise: Exercise;
 
   availableExercisesChanged = new Subject<Exercise[]>();
-  runningExerciseChanged = new Subject<Exercise>();
   finishedExercisesChanged = new Subject<Exercise[]>();
 
   constructor(
     private http: HttpClient,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<State>
   ) { }
 
   fetchAvailableExercises() {
@@ -58,19 +61,15 @@ export class TrainingService {
   }
 
   startExercise(selectedId: string) {
-    this.runningExercise = this.availableExercises.find(
+    this.currentExercise = this.availableExercises.find(
       ex => ex.id === selectedId
     );
-    this.runningExerciseChanged.next({ ...this.runningExercise });
-  }
-
-  getRunningExercise() {
-    return { ...this.runningExercise };
+    this.store.dispatch(new SetCurrentExercise(this.currentExercise));
   }
 
   completeExercise() {
     this.addDataToDatabase({
-      ...this.runningExercise,
+      ...this.currentExercise,
       date: new Date(),
       state: 'completed'
     });
@@ -78,9 +77,9 @@ export class TrainingService {
 
   cancelExercise(progress: number) {
     this.addDataToDatabase({
-      ...this.runningExercise,
-      duration: this.runningExercise.duration * (progress / 100),
-      calories: this.runningExercise.calories * (progress / 100),
+      ...this.currentExercise,
+      duration: this.currentExercise.duration * (progress / 100),
+      calories: this.currentExercise.calories * (progress / 100),
       date: new Date(),
       state: 'cancelled'
     });
@@ -118,8 +117,8 @@ export class TrainingService {
     this.http.post(`${environment.dataApiUrl}/finished-exercises.json`, exercise)
       .subscribe(
         () => {
-          this.runningExercise = null;
-          this.runningExerciseChanged.next(null);
+          this.currentExercise = null;
+          this.store.dispatch(new ClearCurrentExercise());
 
           this.uiService.hideSpinner();
         },

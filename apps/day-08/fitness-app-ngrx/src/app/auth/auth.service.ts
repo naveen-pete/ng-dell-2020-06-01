@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, throwError, Observable } from 'rxjs';
+import { throwError, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -14,7 +14,7 @@ import { State } from '../app.reducer';
 import { StartLoading, StopLoading } from '../shared/store/loading.actions';
 import { SetUser, ClearUser } from "./store/user.actions";
 
-const TOKEN_EXPIRATION_TIME_IN_SEC = 600;
+const DEFAULT_TOKEN_EXPIRY_TIME_IN_SEC = 600;
 
 @Injectable({
   providedIn: 'root'
@@ -131,7 +131,7 @@ export class AuthService {
   private handleAuthToken(responseData: AuthResponseData) {
     const { localId, email, idToken, expiresIn } = responseData;
     const expiresInMS =
-      (expiresIn ? parseInt(expiresIn) : TOKEN_EXPIRATION_TIME_IN_SEC) * 1000;
+      (expiresIn ? parseInt(expiresIn) : DEFAULT_TOKEN_EXPIRY_TIME_IN_SEC) * 1000;
     const tokenExpirationDate = new Date(Date.now() + expiresInMS);
 
     this.autoLogout(expiresInMS);

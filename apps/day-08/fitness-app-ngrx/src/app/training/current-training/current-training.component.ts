@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import { StopTrainingComponent } from '../stop-training/stop-training.component';
 import { TrainingService } from '../training.service';
 import { UIService } from '../../shared/ui.service';
+import { State } from '../../app.reducer';
+import { Exercise } from '../exercise.model';
 
 @Component({
   selector: 'app-current-training',
@@ -18,11 +21,13 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
   isLoading = false;
 
   private loadingSub: Subscription;
+  private exerciseSub: Subscription;
 
   constructor(
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     private trainingService: TrainingService,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<State>
   ) { }
 
   ngOnInit() {
@@ -33,19 +38,21 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
   }
 
   startOrResumeTimer() {
-    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
+    this.exerciseSub = this.store.select('currentExercise').subscribe((exercise: Exercise) => {
+      const step = exercise.duration / 100 * 1000;
 
-    this.timer = window.setInterval(() => {
-      this.progress = this.progress + 1;
-      if (this.progress >= 100) {
-        this.trainingService.completeExercise();
-        clearInterval(this.timer);
-      }
-    }, step);
+      this.timer = window.setInterval(() => {
+        this.progress = this.progress + 1;
+        if (this.progress >= 100) {
+          this.trainingService.completeExercise();
+          window.clearInterval(this.timer);
+        }
+      }, step);
+    });
   }
 
   onStop() {
-    clearInterval(this.timer);
+    window.clearInterval(this.timer);
     const dialogRef = this.dialog.open(StopTrainingComponent, {
       data: {
         progress: this.progress
@@ -67,6 +74,9 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
     if (this.loadingSub) {
       this.loadingSub.unsubscribe();
     }
-  }
 
+    if (this.exerciseSub) {
+      this.exerciseSub.unsubscribe();
+    }
+  }
 }
