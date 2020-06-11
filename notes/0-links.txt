@@ -113,3 +113,6 @@ Links
     
   - NgRx Store
     - https://ngrx.io/guide/store
+    
+  - Crash Course: Angular and ngRx | Aspen Payton
+    - https://youtu.be/272KDxSIQBw

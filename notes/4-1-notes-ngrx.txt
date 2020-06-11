@@ -20,8 +20,8 @@ NgRx - 1
       
       - Import StoreDevToolsModule and add it to imports[] array
       
-          import { StoreDevToolsModule } from '@ngrx/store-devtools';
-          import { environment } from '../enviroments/environment'
+          import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+          import { environment } from '../environments/environment';
           
           imports: [
             ...
