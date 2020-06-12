@@ -1,13 +1,16 @@
-import * as Actions from './loading.actions';
+import * as LoadingActions from './loading.actions';
 
 const initialState = false;
 
-export function loadingReducer(state = initialState, action: Actions.LoadingActions): boolean {
+export function loadingReducer(
+  state = initialState,
+  action: LoadingActions.Actions
+): boolean {
   switch (action.type) {
-    case Actions.START_LOADING:
+    case LoadingActions.START_LOADING:
       return true;
 
-    case Actions.STOP_LOADING:
+    case LoadingActions.STOP_LOADING:
       return false;
 
     default:

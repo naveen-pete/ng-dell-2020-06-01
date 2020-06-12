@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { AuthData } from '../auth-data.model';
-import { AuthService } from '../auth.service';
-import { State } from '../../app.reducer';
+import { AppState } from '../../store/app.reducer';
+import { LoginStart } from '../store/auth.actions';
 
 @Component({
   selector: 'app-login',
@@ -19,14 +19,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   private loadingSub: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private store: Store<State>
+    private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
-    this.loadingSub = this.store.select('loading').subscribe(loading => {
-      this.isLoading = loading;
-    });
+    this.store.select('auth').subscribe(
+      ({ loading }) => this.isLoading = loading
+    );
 
     this.form = new FormGroup({
       email: new FormControl('', { validators: [Validators.required, Validators.email] }),
@@ -39,13 +38,13 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const userInfo: AuthData = {
+    const authData: AuthData = {
       email: this.form.value.email,
       password: this.form.value.password,
       returnSecureToken: true
     };
 
-    this.authService.login(userInfo);
+    this.store.dispatch(new LoginStart(authData));
   }
 
   get email() {

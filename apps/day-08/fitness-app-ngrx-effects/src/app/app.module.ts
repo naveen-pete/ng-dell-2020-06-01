@@ -5,18 +5,21 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from '../environments/environment';
+import { EffectsModule } from "@ngrx/effects";
 
 import { AppComponent } from './app.component';
-
 import { HomeComponent } from './home/home.component';
+import { HeaderComponent } from './navigation/header/header.component';
+import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 
 import { MaterialModule } from './material.module';
 import { AppRoutingModule } from './app-routing.module';
-import { HeaderComponent } from './navigation/header/header.component';
-import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 import { AuthModule } from './auth/auth.module';
-import { appReducer } from './app.reducer';
+
+import { environment } from '../environments/environment';
+import { appReducers } from './store/app.reducer';
+import { AuthEffects } from './auth/store/auth.effects';
+
 import { AuthInterceptor } from './auth/auth.interceptor';
 
 @NgModule({
@@ -32,10 +35,10 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     FlexLayoutModule,
     HttpClientModule,
 
-    StoreModule.forRoot(appReducer),
-    // Instrumentation must be imported after importing StoreModule (config is optional)
+    StoreModule.forRoot(appReducers),
+    EffectsModule.forRoot([AuthEffects]),
     StoreDevtoolsModule.instrument({
-      logOnly: environment.production, // Restrict extension to log-only mode
+      logOnly: environment.production,
     }),
 
     MaterialModule,

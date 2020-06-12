@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { StopTrainingComponent } from '../stop-training/stop-training.component';
 import { TrainingService } from '../training.service';
 import { UIService } from '../../shared/ui.service';
-import { State } from '../../app.reducer';
+import { AppState } from '../../store/app.reducer';
 import { Exercise } from '../exercise.model';
 
 @Component({
@@ -27,7 +28,7 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private trainingService: TrainingService,
     private uiService: UIService,
-    private store: Store<State>
+    private store: Store<AppState>
   ) { }
 
   ngOnInit() {
@@ -38,17 +39,19 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
   }
 
   startOrResumeTimer() {
-    this.exerciseSub = this.store.select('currentExercise').subscribe((exercise: Exercise) => {
-      const step = exercise.duration / 100 * 1000;
+    this.exerciseSub = this.store.select('currentExercise')
+      .pipe(take(1))
+      .subscribe((exercise: Exercise) => {
+        const step = exercise.duration / 100 * 1000;
 
-      this.timer = window.setInterval(() => {
-        this.progress = this.progress + 1;
-        if (this.progress >= 100) {
-          this.trainingService.completeExercise();
-          window.clearInterval(this.timer);
-        }
-      }, step);
-    });
+        this.timer = window.setInterval(() => {
+          this.progress = this.progress + 1;
+          if (this.progress >= 100) {
+            this.trainingService.completeExercise();
+            window.clearInterval(this.timer);
+          }
+        }, step);
+      });
   }
 
   onStop() {

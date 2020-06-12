@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { environment } from '../../environments/environment';
 import { Exercise } from './exercise.model';
 import { UIService } from '../shared/ui.service';
-import { State } from '../app.reducer';
+import { AppState } from '../store/app.reducer';
 import { SetCurrentExercise, ClearCurrentExercise } from './store/current-exercise.actions';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class TrainingService {
   constructor(
     private http: HttpClient,
     private uiService: UIService,
-    private store: Store<State>
+    private store: Store<AppState>
   ) { }
 
   fetchAvailableExercises() {

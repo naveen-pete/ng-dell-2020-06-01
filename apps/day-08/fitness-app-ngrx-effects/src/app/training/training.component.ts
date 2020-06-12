@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { Subscription } from 'rxjs';
-import { State } from '../app.reducer';
+import { AppState } from '../store/app.reducer';
 
 @Component({
   selector: 'app-training',
@@ -14,7 +14,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   private exerciseSub: Subscription;
 
-  constructor(private store: Store<State>) { }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
     this.exerciseSub = this.store.select('currentExercise').subscribe(

@@ -4,9 +4,9 @@ import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { AppValidators } from '../../shared/app-validators';
-import { AuthService } from '../auth.service';
 import { AuthData } from '../auth-data.model';
-import { State } from '../../app.reducer';
+import { AppState } from '../../store/app.reducer';
+import { SignupStart } from '../store/auth.actions';
 
 @Component({
   selector: 'app-signup',
@@ -21,12 +21,11 @@ export class SignupComponent implements OnInit, OnDestroy {
   private loadingSub: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private store: Store<State>
+    private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
-    this.loadingSub = this.store.select('loading').subscribe(loading => {
+    this.loadingSub = this.store.select('auth').subscribe(({ loading }) => {
       this.isLoading = loading;
     });
 
@@ -50,13 +49,13 @@ export class SignupComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const userInfo: AuthData = {
+    const authData: AuthData = {
       email: this.form.value.email,
       password: this.form.value.password,
       returnSecureToken: true
     };
 
-    this.authService.registerUser(userInfo);
+    this.store.dispatch(new SignupStart(authData));
   }
 
   get email() {

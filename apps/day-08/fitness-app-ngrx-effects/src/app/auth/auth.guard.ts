@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { State } from '../app.reducer';
+import { AppState } from '../store/app.reducer';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ import { State } from '../app.reducer';
 export class AuthGuard implements CanActivate, CanLoad {
 
   constructor(
-    private store: Store<State>,
+    private store: Store<AppState>,
     private router: Router
   ) { }
 
@@ -28,9 +28,9 @@ export class AuthGuard implements CanActivate, CanLoad {
   }
 
   private checkIfAuthenticated() {
-    return this.store.select('user').pipe(
+    return this.store.select('auth').pipe(
       take(1),
-      map(user => {
+      map(({ user }) => {
         if (user) {
           return true;
         }

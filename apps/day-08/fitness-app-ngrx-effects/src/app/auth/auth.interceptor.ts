@@ -10,17 +10,17 @@ import { Observable } from 'rxjs';
 import { take, switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { State } from '../app.reducer';
+import { AppState } from '../store/app.reducer';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private store: Store<State>) { }
+  constructor(private store: Store<AppState>) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return this.store.select('user').pipe(
+    return this.store.select('auth').pipe(
       take(1),
-      switchMap(user => {
+      switchMap(({ user }) => {
         if (!user) {
           return next.handle(request);
         }

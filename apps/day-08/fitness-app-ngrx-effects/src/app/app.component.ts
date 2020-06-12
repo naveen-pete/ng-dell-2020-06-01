@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 
-import { AuthService } from './auth/auth.service';
+import { AppState } from './store/app.reducer';
+import { AutoLogin } from './auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +12,9 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent implements OnInit {
   title = 'fitness-app';
 
-  constructor(private authService: AuthService) { }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.authService.autoLogin();
+    this.store.dispatch(new AutoLogin());
   }
 }
