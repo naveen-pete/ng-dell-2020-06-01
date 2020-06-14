@@ -116,3 +116,19 @@ Links
     
   - Crash Course: Angular and ngRx | Aspen Payton
     - https://youtu.be/272KDxSIQBw
+
+-------------------------------------------------------------
+- Progressive Web Applications (PWA)
+
+  - Introduction to PWA
+    - https://web.dev/progressive-web-apps/
+    - https://web.dev/what-are-pwas/
+
+  - Angular service worker introduction
+    - https://angular.io/guide/service-worker-intro
+    
+  - Getting started with service workers
+    - https://angular.io/guide/service-worker-getting-started
+    
+  - Create a Progressive Web App with the Angular CLI
+    - https://web.dev/creating-pwa-with-angular-cli/
