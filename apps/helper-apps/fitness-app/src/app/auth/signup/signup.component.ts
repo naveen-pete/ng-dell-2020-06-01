@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
-import { AppValidators } from '../../common/app-validators';
+import { AppValidators } from '../../shared/app-validators';
 import { AuthService } from '../auth.service';
 import { AuthData } from '../auth-data.model';
-import { Subscription } from 'rxjs';
 import { UIService } from '../../shared/ui.service';
 
 @Component({
@@ -37,7 +37,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   private buildForm() {
     this.form = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
+      email: new FormControl('', [Validators.required, Validators.email, AppValidators.isEmailTakenSync]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       birthdate: new FormControl('', Validators.required),
       agree: new FormControl(false, [Validators.requiredTrue])

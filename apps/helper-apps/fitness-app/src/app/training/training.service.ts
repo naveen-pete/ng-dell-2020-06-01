@@ -51,7 +51,7 @@ export class TrainingService {
         error => {
           console.log('Fetch available exercises failed.');
           this.uiService.hideSpinner();
-          this.uiService.showMessage('Failed to load available exercises.');
+          this.uiService.showMessage('Failed to fetch available exercises.');
           this.availableExercisesChanged.next(null);
         }
       );
@@ -108,7 +108,7 @@ export class TrainingService {
         },
         error => {
           console.log('Fetch finished exercises failed.');
-          console.log('Error:', error);
+          this.uiService.showMessage('Failed to fetch finished exercises.');
         }
       );
   }

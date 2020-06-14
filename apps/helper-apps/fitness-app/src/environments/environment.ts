@@ -4,11 +4,10 @@
 
 export const environment = {
   production: false,
-  dataApiUrl: '<firebase-database-url>/fitness-store',
+  dataApiUrl: 'https://fitness-app-263a0.firebaseio.com/fitness-store',
   authApiUrl: 'https://identitytoolkit.googleapis.com/v1/accounts',
-  firebaseApiKey: '<web-api-key>'
+  firebaseApiKey: 'AIzaSyCAL8DcNO8YYUKa_DBznBiPKSbfyrJuo_0'
 };
-
 
 /*
  * For easier debugging in development mode, you can import the following file
