@@ -5,3 +5,131 @@ Angular PWA - 1
   
   - PWA - a standard web app with native like capabilities
   - Supported by browsers like Safari, Edge
+  
+2. How to convert an Angular App into a PWA?
+  - Run this command inside your Angular app folder
+    - ng add @angular/pwa
+    
+  - Observe the changes to the project
+    - angular.json
+    - ngsw-config.json
+    - package.json
+    - index.html
+    - manifest.webmanifest
+    - app.module.ts
+    - assets folder
+    
+  - Create build
+    - ng build --prod
+    
+  - Observe build output
+    
+3. Run Angular App
+  - Install http-server
+    - npm i -g http-server
+    
+  - Navigate into dist folder and start http-server
+    - http-server
+    
+  - In the browser window, check Application tab within Developer Tools
+    - Service Workers
+    - Cache Storage
+    - Goto Network tab
+      - Choose All requests
+      - Refresh the current screen
+      - Observe Size column
+        - Requests with (ServiceWorker) are loaded from local cache
+    - Shut down http server and observe the app behavior
+    
+4. How does Service Worker work?
+  - A service worker is a network level http interception proxy
+  - JS script
+  
+5. SW version management
+  - Make a change to app code
+  - Build the app
+  - Refresh the browser window - 2 times
+  
+  - Programmatically check for new version
+  
+    - App Component
+    
+        ngOnInit() {
+          if (this.swUpdate.isEnabled) {
+            this.swUpdate.available.subscribe(
+              () => {
+                if (window.confirm('New version available. Load new version?')) {
+                  window.location.reload();
+                }
+              }
+            );
+          }
+
+          this.authService.autoLogin();
+        }
+
+6. Dropping Service Worker from build
+  - angular.json
+    - Change following configuration
+    
+      "serviceWorker": false
+      
+7. Caching REST API data
+
+  - ngsw-config.json
+
+    a. Cache Strategy - Performance (Cache First, Network Last)
+
+          "dataGroups": [
+            {
+              "name": "available-exercises",
+              "urls": [
+                "/**/*available-exercises*"
+              ],
+              "cacheConfig": {
+                "strategy": "performance",
+                "maxAge": "1m", // How long data should be cached?
+                "maxSize": 1    // How many requests to cache?
+              }
+            },
+            {
+              "name": "finished-exercises",
+              "urls": [
+                "/**/*finished-exercises*"
+              ],
+              "cacheConfig": {
+                "strategy": "performance",
+                "maxAge": "1m", // How long data should be cached?
+                "maxSize": 1    // How many requests to cache?
+              }
+            }
+          ]
+
+    b. Cache Strategy - Freshness (Network First, Cache Last)
+
+          "dataGroups": [
+            {
+              "name": "available-exercises",
+              "urls": [
+                "/**/*available-exercises*"
+              ],
+              "cacheConfig": {
+                "strategy": "freshness",
+                "timeout": "10s", // How long to wait for a server response?
+                "maxAge": "10m",  // How long data should be cached?
+                "maxSize": 1      // How many requests to cache?
+              }
+            },
+            {
+              "name": "finished-exercises",
+              "urls": [
+                "/**/*finished-exercises*"
+              ],
+              "cacheConfig": {
+                "strategy": "freshness",
+                "timeout": "10s", // How long to wait for a server response?
+                "maxAge": "10m",  // How long data should be cached?
+                "maxSize": 1      // How many requests to cache?
+              }
+            }
+          ]

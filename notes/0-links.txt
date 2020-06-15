@@ -132,3 +132,19 @@ Links
     
   - Create a Progressive Web App with the Angular CLI
     - https://web.dev/creating-pwa-with-angular-cli/
+    
+  - Service worker configuration
+    - https://angular.io/guide/service-worker-config
+    
+  - Angular University Blogs
+    - Angular Service Worker - Step-By-Step Guide for turning your Application into a PWA
+      - https://blog.angular-university.io/angular-service-worker/
+      
+    - Angular App Shell - Boosting Application Startup Performance
+      - https://blog.angular-university.io/angular-app-shell/
+      
+    - Angular Push Notifications: a Complete Step-by-Step Guide
+      - https://blog.angular-university.io/angular-push-notifications/
+      
+    - Service Workers - Practical Guided Introduction (several examples)
+      - https://blog.angular-university.io/service-workers/
