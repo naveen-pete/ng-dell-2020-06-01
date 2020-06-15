@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from "@angular/common";
 
 import { AuthService } from './auth/auth.service';
 
@@ -10,9 +11,16 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent implements OnInit {
   title = 'fitness-app';
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: any
+  ) { }
 
   ngOnInit() {
-    this.authService.autoLogin();
+    if (isPlatformBrowser(this.platformId)) {
+      this.authService.autoLogin();
+    }
+
+    console.log('AppComponent.ngOnInit() invoked.');
   }
 }
