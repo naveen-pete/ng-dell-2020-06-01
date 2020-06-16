@@ -1,0 +1,12 @@
+<ul fxLayout fxLayoutGap="10px" class="notification-items">
+  <li>
+    <button [disabled]="sub" mat-icon-button aria-label="Subscribe" (click)="subscribeToNotifications()">
+      <mat-icon>mark_email_read</mat-icon>
+    </button>
+  </li>
+  <li>
+    <button [disabled]="!sub" mat-icon-button aria-label="Send" (click)="sendNotifications()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </li>
+</ul>
