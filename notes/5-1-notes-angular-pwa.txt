@@ -5,7 +5,8 @@ Angular PWA - 1
   
   - PWA - a standard web app with native like capabilities
   - Supported by browsers like Safari, Edge
-  
+
+-------------------------------------------------------------------  
 2. How to convert an Angular App into a PWA?
   - Run this command inside your Angular app folder
     - ng add @angular/pwa
@@ -23,7 +24,8 @@ Angular PWA - 1
     - ng build --prod
     
   - Observe build output
-    
+
+-------------------------------------------------------------------    
 3. Run Angular App
   - Install http-server
     - npm i -g http-server
@@ -41,10 +43,12 @@ Angular PWA - 1
         - Requests with (ServiceWorker) are loaded from local cache
     - Shut down http server and observe the app behavior
     
+-------------------------------------------------------------------
 4. How does Service Worker work?
   - A service worker is a network level http interception proxy
   - JS script
-  
+
+-------------------------------------------------------------------
 5. SW version management
   - Make a change to app code
   - Build the app
@@ -68,12 +72,14 @@ Angular PWA - 1
           this.authService.autoLogin();
         }
 
+-------------------------------------------------------------------
 6. Dropping Service Worker from build
   - angular.json
     - Change following configuration
     
       "serviceWorker": false
-      
+
+-------------------------------------------------------------------
 7. Caching REST API data
 
   - ngsw-config.json
@@ -133,3 +139,85 @@ Angular PWA - 1
               }
             }
           ]
+
+-------------------------------------------------------------------
+8. Install PWA
+  - App Manifest file
+    - Installing PWA on your device (laptop)
+    - Uninstalling PWA from your device (laptop)
+
+-------------------------------------------------------------------
+9. App Shell
+
+  - Scaffolding an Angular Universal Application
+    
+      ng generate app-shell
+      
+    - Observe the changes to the project
+    
+      - angular.json
+        - server
+        - app-shell
+        
+      - package.json
+        - @angular/platform-server
+        
+      - tsconfig.server.json
+      
+      - main.server.ts (src folder)
+      
+      - main.ts
+      
+      - AppModule
+      
+      - AppServerModule
+      
+      - AppShellComponent
+  
+  - App Component changes
+    
+    - Import Inject and PLATFORM_ID from '@angular/core' package
+    - Import isPlatformBrowser from '@angular/common' package
+    
+        import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+        import { isPlatformBrowser } from "@angular/common";
+        
+    - Inject platform id into the constructor
+    
+        constructor(
+          private authService: AuthService,
+          @Inject(PLATFORM_ID) private platformId: any
+        ) { }
+
+    - Update ngOnInit() to invoke AuthService.autoLogin() only on the browser
+    
+        ngOnInit() {
+          if (isPlatformBrowser(this.platformId)) {
+            this.authService.autoLogin();
+          }
+
+          console.log('AppComponent.ngOnInit() invoked.');
+        }
+
+  
+  - Build the app
+  
+    - ng run fitness-app:app-shell:production
+    
+  - Observe index.html content.
+  - Profile the app using Chrome developer tools
+
+-------------------------------------------------------------------
+10. Push Notifications
+
+  - Generating a VAPID key pair using node web-push
+  
+      npm install web-push -g
+      
+      web-push generate-vapid-keys --json
+      
+      {
+        "publicKey":"BC506Dc3cB1qO-5WDIbUZG9AUiiCERMBrR_8hjQAYcoGDNDB8Dej8j4Yt0XMVXUe5IRZ7BE78UGGtyVGsBWhoB4",
+        "privateKey":"pIkw-QWo7toQlyrfi8BmhrFvY8HEAx4m-8A1N3Acc70"
+      }
+      

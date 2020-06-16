@@ -148,3 +148,6 @@ Links
       
     - Service Workers - Practical Guided Introduction (several examples)
       - https://blog.angular-university.io/service-workers/
+
+  - Progressive Web App Training (YouTube)
+    - https://www.youtube.com/playlist?list=PLNYkxOF6rcIB2xHBZ7opgc2Mv009X87Hh
