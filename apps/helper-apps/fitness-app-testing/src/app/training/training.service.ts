@@ -64,6 +64,10 @@ export class TrainingService {
     this.runningExerciseChanged.next({ ...this.runningExercise });
   }
 
+  setRunningExercise(exercise: Exercise) {
+    this.runningExercise = { ...exercise };
+  }
+
   getRunningExercise() {
     return { ...this.runningExercise };
   }

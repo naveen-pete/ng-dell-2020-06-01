@@ -151,3 +151,12 @@ Links
 
   - Progressive Web App Training (YouTube)
     - https://www.youtube.com/playlist?list=PLNYkxOF6rcIB2xHBZ7opgc2Mv009X87Hh
+    
+-------------------------------------------------------------
+- Angular Testing
+  
+  - Jasmine
+    - https://jasmine.github.io/pages/getting_started.html
+    
+  - Angular Testing
+    - https://angular.io/guide/testing

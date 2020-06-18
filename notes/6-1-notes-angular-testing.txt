@@ -1,0 +1,535 @@
+Angular Testing - 1
+-------------------
+
+1. Test suites and specs
+
+    describe('name', () => {
+    
+      it('should ...', () => {
+      
+        pending();
+      
+      });
+      
+      it('should ...', () => {
+        
+        fail();   // simulate failure
+      
+      });
+    
+    });
+    
+  
+  - Execute tests
+    - ng test              (hot reload)
+    - ng test --no-watch   (execute tests and exit) 
+  
+------------------------------------------------------------------------
+2. Spec - Step-by-step implementation
+
+  - Setup - preparation
+  - Execution - trigger/perform the operation to be tested
+  - Assert - check if the actual result is matching expected result
+  
+  - Assertion
+  
+      expect(actualResult).toBe('expected-value');
+      
+      expect(actualResult).toBe('expected-value', 'descriptive error message');
+      
+------------------------------------------------------------------------
+3. Introduction to spies
+
+  - Spying on a particular method
+  
+        const logger = new LoggerService();
+        spyOn(logger, 'log');
+        const calculator = new Calculator(logger);
+        const result = calculator.add(2, 2);
+        expect(result).toBe(4);
+        expect(logger.log).toHaveBeenCalledTimes(1);
+      
+  - Creating a fake object
+
+        const logger = jasmine.createSpyObj('LoggerService', ['log']);
+        const calculator = new Calculator(logger);
+        const result = calculator.add(2, 2);
+        expect(result).toBe(4);
+        expect(logger.log).toHaveBeenCalledTimes(1);
+      
+  - Setup and Tear Down
+
+    - beforeEach()
+    
+        describe('CalculatorService', () => {
+          let calculator: CalculatorService;
+          let loggerSpy: any;
+        
+          beforeEach(() => {
+            loggerSpy = jasmine.createSpyObj('LoggerService', ['log']);
+            calculator = new Calculator(loggerSpy);
+          });
+
+          it('should add 2 numbers', () => {
+            const result = calculator.add(2, 2);
+            expect(result).toBe(4);
+            expect(loggerSpy.log).toHaveBeenCalledTimes(1);
+          });
+
+          it('should subtract 2 numbers', () => {
+            const result = calculator.subtract(2, 2);
+            expect(result).toBe(0);
+            expect(loggerSpy.log).toHaveBeenCalledTimes(1);
+          });
+        });
+
+------------------------------------------------------------------------
+4. Using DI in Angular Testing
+
+  - TestBed
+  
+        describe('CalculatorService', () => {
+          let calculator: CalculatorService;
+          let loggerSpy: any;
+        
+          beforeEach(() => {
+            loggerSpy = jasmine.createSpyObj('LoggerService', ['log']);
+            
+            TestBed.configureTestingModule({
+              providers: [
+                CalculatorService,
+                { provide: LoggerService, useValue: loggerSpy }
+              ]
+            });
+            
+            calculator = TestBed.get(CalculatorService);
+          });
+
+          it('should add 2 numbers', () => {
+            ...
+          });
+
+          it('should subtract 2 numbers', () => {
+            ...
+          });
+        });
+
+------------------------------------------------------------------------
+5. Some Jasmine Test Utilities
+
+  - Exclude a test suite
+      xdescribe();
+      
+  - Exclude one spec
+      xit();
+      
+  - Focus on one test suite
+      fdescribe();
+  
+  - Focus on one spec
+      fit();
+      
+------------------------------------------------------------------------
+6. Testing Angular HTTP Services
+
+  - Test setup with HttpClientTestingModule
+  
+      describe('TrainingService', () => {
+        let service: TrainingService;
+        let uiServiceSpy: any;
+        let httpTestingController: HttpTestingController;
+        const apiUrl = `${environment.dataApiUrl}/available-exercises.json`;
+
+        beforeEach(() => {
+          uiServiceSpy = jasmine.createSpyObj('UIService', ['showSpinner', 'hideSpinner', 'showMessage']);
+
+          TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+            providers: [
+              TrainingService,
+              { provide: UIService, useValue: uiServiceSpy }
+            ]
+          });
+
+          service = TestBed.get(TrainingService);
+          httpTestingController = TestBed.get(HttpTestingController);
+        });
+
+        it('', () => {});
+        
+      });
+      
+------------------------------------------------------------------------
+Component Testing - Presentational Components
+
+  - Checking if component is created
+  
+    - async() function
+    
+        import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+
+        describe('CoursesCardListComponent', () => {
+
+          let component: CoursesCardListComponent;
+          let fixture: ComponentFixture<CoursesCardListComponent>;
+
+          beforeEach(async(() => {
+              TestBed.configureTestingModule({
+                  imports: [CoursesModule]
+              })
+              .compileComponents()
+              .then(() => {
+
+                  fixture = TestBed.createComponent(CoursesCardListComponent);
+                  component = fixture.componentInstance;
+
+              });
+          }));
+
+          it('should create the component', () => {
+
+              expect(component).toBeTruthy();
+
+          });
+
+        });
+        
+------------------------------------------------------------------------
+Component Testing - DOM Interaction
+
+  - DebugElement & By
+  
+        import {DebugElement} from '@angular/core';
+        import {By} from '@angular/platform-browser';  
+        
+        
+        describe('CoursesCardListComponent', () => {
+
+          let component: CoursesCardListComponent;
+          let fixture: ComponentFixture<CoursesCardListComponent>;
+
+          beforeEach(async(() => {
+              TestBed.configureTestingModule({
+                  imports: [CoursesModule]
+              })
+              .compileComponents()
+              .then(() => {
+
+                  fixture = TestBed.createComponent(CoursesCardListComponent);
+                  component = fixture.componentInstance;
+                  el = fixture.debugElement;
+
+              });
+          }));
+
+          it('should display the course list', () => {
+
+            component.courses = setupCourses();
+
+            fixture.detectChanges();
+
+            const cards = el.queryAll(By.css(".course-card"));
+
+            expect(cards).toBeTruthy("Could not find cards");
+            expect(cards.length).toBe(12, "Unexpected number of courses");
+
+          });
+          
+          it('should display the first course', () => {
+
+            component.courses = setupCourses();
+
+            fixture.detectChanges();
+
+            const course = component.courses[0];
+
+            const card = el.query(By.css(".course-card:first-child")),
+                    title = card.query(By.css("mat-card-title")),
+                    image = card.query(By.css("img"));
+
+            expect(card).toBeTruthy("Could not find course card");
+
+            expect(title.nativeElement.textContent).toBe(course.titles.description);
+
+            expect(image.nativeElement.src).toBe(course.iconUrl);
+
+          });
+          
+        });
+        
+------------------------------------------------------------------------
+Component Testing - Container Components
+
+
+      describe('HomeComponent', () => {
+
+        let fixture: ComponentFixture<HomeComponent>;
+        let component:HomeComponent;
+        let el: DebugElement;
+        let coursesService: any;
+
+        const beginnerCourses = setupCourses()
+            .filter(course => course.category == 'BEGINNER');
+
+          const advancedCourses = setupCourses()
+              .filter(course => course.category == 'ADVANCED');
+
+
+
+        beforeEach(async(() => {
+
+          const coursesServiceSpy = jasmine.createSpyObj('CoursesService', ['findAllCourses'])
+
+          TestBed.configureTestingModule({
+              imports: [
+                  CoursesModule,
+                  NoopAnimationsModule
+              ],
+              providers: [
+                  {provide: CoursesService, useValue: coursesServiceSpy}
+              ]
+          }).compileComponents()
+              .then(() => {
+                  fixture = TestBed.createComponent(HomeComponent);
+                  component = fixture.componentInstance;
+                  el = fixture.debugElement;
+                  coursesService = TestBed.get(CoursesService);
+              });
+
+        }));
+        
+        it("should display only beginner courses", () => {
+
+          coursesService.findAllCourses.and.returnValue(of(beginnerCourses));
+
+          fixture.detectChanges();
+
+          const tabs = el.queryAll(By.css(".mat-tab-label"));
+
+          expect(tabs.length).toBe(1, "Unexpected number of tabs found");
+
+        });
+        
+      });
+
+
+      import {DebugElement} from '@angular/core';
+
+      export const ButtonClickEvents = {
+        left:  { button: 0 },
+        right: { button: 2 }
+      };
+
+
+      export function click(el: DebugElement | HTMLElement,
+                            eventObj: any = ButtonClickEvents.left): void {
+
+        if (el instanceof HTMLElement) {
+          el.click();
+        } else {
+          el.triggerEventHandler('click', eventObj);
+        }
+      }
+      
+------------------------------------------------------------------------
+Async Testing - Jasmine done()
+
+    import {fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
+    import {of} from 'rxjs';
+    import {delay} from 'rxjs/operators';
+
+
+    describe('Async Testing Examples', () => {
+
+      it('Asynchronous test example with Jasmine done()', (done: DoneFn) => {
+
+          let test = false;
+
+          setTimeout(() => {
+
+              console.log('running assertions');
+
+              test = true;
+
+              expect(test).toBeTruthy();
+
+              done();
+
+          }, 1000);
+
+      });
+    });
+
+------------------------------------------------------------------------
+Async Testing - fakeasync()
+
+    it('Asynchronous test example - setTimeout()', fakeAsync(() => {
+
+        let test = false;
+
+        setTimeout(() => {
+        });
+
+        setTimeout(() => {
+
+            console.log('running assertions setTimeout()');
+
+            test = true;
+
+        }, 1000);
+
+        flush();  // ensures all the async code is completed
+        // tick(1000);
+
+        expect(test).toBeTruthy();
+
+    }));
+
+------------------------------------------------------------------------
+Async Testing - fakeasync() with a promise
+
+    it('Asynchronous test example - plain Promise', fakeAsync(() => {
+
+        let test = false;
+
+        console.log('Creating promise');
+
+        Promise.resolve().then(() => {
+
+            console.log('Promise first then() evaluated successfully');
+
+            return Promise.resolve();
+        })
+        .then(() => {
+
+            console.log('Promise second then() evaluated successfully');
+
+            test = true;
+
+        });
+
+        flushMicrotasks();
+
+        console.log('Running test assertions');
+
+        expect(test).toBeTruthy();
+
+    }));
+
+------------------------------------------------------------------------
+Async Testing - fakeasync() with a promise and setTimeout()
+
+    it('Asynchronous test example - Promises + setTimeout()', fakeAsync(() => {
+
+        let counter = 0;
+
+        Promise.resolve()
+            .then(() => {
+
+               counter+=10;
+
+               setTimeout(() => {
+
+                   counter += 1;
+
+               }, 1000);
+
+            });
+
+        expect(counter).toBe(0);
+
+        flushMicrotasks();
+
+        expect(counter).toBe(10);
+
+        tick(500);
+
+        expect(counter).toBe(10);
+
+        tick(500);
+
+        expect(counter).toBe(11);
+
+    }));
+
+------------------------------------------------------------------------
+Async Testing - fakeasync() with an observable
+
+    it('Asynchronous test example - Observables', fakeAsync(() => {
+
+        let test = false;
+
+        console.log('Creating Observable');
+
+        const test$ = of(test).pipe(delay(1000));
+
+        test$.subscribe(() => {
+
+            test = true;
+
+        });
+
+        tick(1000);
+
+        console.log('Running test assertions');
+
+        expect(test).toBe(true);
+
+    }));
+
+------------------------------------------------------------------------
+Async Testing - Unit testing for a component with fakeasync()
+
+    it("should display advanced courses when tab clicked - fakeAsync", fakeAsync(() => {
+
+        coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+
+        fixture.detectChanges();
+
+        const tabs = el.queryAll(By.css(".mat-tab-label"));
+
+        click(tabs[1]);
+
+        fixture.detectChanges();
+
+        flush();
+
+        const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+
+        console.log(cardTitles);
+
+        expect(cardTitles.length).toBeGreaterThan(0,"Could not find card titles");
+
+        expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+
+    }));
+
+------------------------------------------------------------------------
+Async Testing - Unit testing for a component with async()
+
+    it("should display advanced courses when tab clicked - async", async(() => {
+
+        coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+
+        fixture.detectChanges();
+
+        const tabs = el.queryAll(By.css(".mat-tab-label"));
+
+        click(tabs[1]);
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+
+            console.log("called whenStable() ");
+
+            const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+
+            expect(cardTitles.length).toBeGreaterThan(0,"Could not find card titles");
+
+            expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+
+        });
+
+    }));
+    
