@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { Store } from '@ngrx/store';
 
 import { AuthData } from '../auth-data.model';
 import { AuthService } from '../auth.service';
-import { AppState } from '../../store/app.reducer';
-import { LoginStart } from '../store/auth.actions';
+import { UIService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-login',
@@ -21,12 +19,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private store: Store<AppState>
+    private uiService: UIService
   ) { }
 
   ngOnInit(): void {
-    this.loadingSub = this.store.select('auth').subscribe(authState => {
-      this.isLoading = authState.loading;
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(isLoading => {
+      this.isLoading = isLoading;
     });
 
     this.form = new FormGroup({
@@ -46,8 +44,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       returnSecureToken: true
     };
 
-    this.store.dispatch(new LoginStart(userInfo));
-    // this.authService.login(userInfo);
+    this.authService.login(userInfo);
   }
 
   get email() {
