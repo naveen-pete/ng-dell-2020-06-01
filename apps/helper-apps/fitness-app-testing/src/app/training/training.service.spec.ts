@@ -4,16 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from "@angular/common/
 import { TrainingService } from "./training.service";
 import { UIService } from '../shared/ui.service';
 import { environment } from '../../environments/environment';
-
-const availableExercisesResponse = {
-  '1': { calories: 8, duration: 10, name: 'Push-ups' },
-  '2': { calories: 10, duration: 5, name: 'Plank' }
-};
-
-const availableExercises = [
-  { id: '1', calories: 8, duration: 10, name: 'Push-ups' },
-  { id: '2', calories: 10, duration: 5, name: 'Plank' }
-];
+import { availableExercises, availableExercisesResponse } from "./training-test-data";
 
 describe('TrainingService', () => {
   let service: TrainingService;

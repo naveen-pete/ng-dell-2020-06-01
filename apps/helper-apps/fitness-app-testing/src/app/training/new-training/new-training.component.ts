@@ -13,6 +13,7 @@ import { UIService } from '../../shared/ui.service';
 })
 export class NewTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('f') form: NgForm;
+  e: string;
 
   exercises: Exercise[] = [];
   isLoading = false;
