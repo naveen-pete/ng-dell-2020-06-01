@@ -160,3 +160,15 @@ Links
     
   - Angular Testing
     - https://angular.io/guide/testing
+
+-------------------------------------------------------------
+- Micro Frontends
+
+  - Micro Frontends
+    - https://martinfowler.com/articles/micro-frontends.html
+    
+  - Micro Frontends
+    - https://micro-frontends.org/
+
+  - Pattern: Backends For Frontends
+    - https://samnewman.io/patterns/architectural/bff/

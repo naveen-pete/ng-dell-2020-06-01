@@ -1,0 +1,16 @@
+Micro Frontends
+---------------
+
+What is a micro frontend?
+
+- Decomposing frontend monoliths into smaller, simpler chunks that can be developed, tested and deployed independently, while still appearing to customers as a single cohesive product. We call this technique micro frontends.
+
+------------------------------------------------------------------------
+Benefits
+
+Some of the key benefits that we've seen from micro frontends are:
+
+- smaller, more cohesive and maintainable codebases
+- more scalable organisations with decoupled, autonomous teams
+- the ability to upgrade, update, or even rewrite parts of the frontend in a more incremental fashion than was previously possible
+
