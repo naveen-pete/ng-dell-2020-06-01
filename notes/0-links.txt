@@ -172,3 +172,12 @@ Links
 
   - Pattern: Backends For Frontends
     - https://samnewman.io/patterns/architectural/bff/
+
+  - How To Implement Micro-Frontend Architecture With Angular
+    - https://medium.com/bb-tutorials-and-thoughts/how-to-implement-micro-frontend-architecture-with-angular-e6828a0a049c
+
+  - 6 Steps to your Angular-based Microfrontend Shell
+    - https://www.angulararchitects.io/aktuelles/6-steps-to-your-angular-based-microfrontend-shell/
+    
+  - Build Micro Front-Ends Using Angular Elements: The Beginner's Guide
+    - https://dzone.com/articles/build-micro-front-ends-using-angular-elements-the
