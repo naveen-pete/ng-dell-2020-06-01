@@ -14,7 +14,8 @@
           "/*.js"
         ]
       }
-    }, {
+    },
+    {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
@@ -23,6 +24,31 @@
           "/assets/**",
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "available-exercises",
+      "urls": [
+        "/**/*available-exercises*"
+      ],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxAge": "10m",
+        "maxSize": 1
+      }
+    },
+    {
+      "name": "finished-exercises",
+      "urls": [
+        "/**/*finished-exercises*"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "10s",
+        "maxAge": "10m",
+        "maxSize": 1
       }
     }
   ]

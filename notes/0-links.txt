@@ -181,3 +181,7 @@ Links
     
   - Build Micro Front-Ends Using Angular Elements: The Beginner's Guide
     - https://dzone.com/articles/build-micro-front-ends-using-angular-elements-the
+
+------------------------------------------------------------
+  - HTML5
+    - https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5

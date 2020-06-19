@@ -7,9 +7,9 @@ const addPushSubscriber = require("./add-push-subscriber.route");
 const sendNewsletter = require("./send-newsletter.route");
 
 const vapidKeys = {
-  publicKey: "BC506Dc3cB1qO-5WDIbUZG9AUiiCERMBrR_8hjQAYcoGDNDB8Dej8j4Yt0XMVXUe5IRZ7BE78UGGtyVGsBWhoB4",
-  privateKey: "pIkw-QWo7toQlyrfi8BmhrFvY8HEAx4m-8A1N3Acc70"
-};
+  "publicKey": "BKPl0gPQD_R5mj-dAZWAnJksfDO2BY5JiHb3lR4G5Ex358fNWb_AFDxIWsp2z-q7-FytoE7I-LROAdDi8PJGdB4",
+  "privateKey": "jYV2dcGhMWdtejb5XEpsohz92VnfMxO03ZnjNwTKfwA"
+}
 
 webpush.setVapidDetails(
   'mailto:support@fitness-app.com',
