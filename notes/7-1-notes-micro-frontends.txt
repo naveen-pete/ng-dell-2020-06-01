@@ -1,16 +1,131 @@
 Micro Frontends
 ---------------
 
+Microservice
+  - Microservice - an architectural style that structures an app as a collection of loosely coupled services
+    - Independent - do not depend on each other
+    - Work independently but together they create a bigger system
+
+    - Event bus - allows publish/subscribe style communication between components without requiring the components to explicitly register with one another
+
+Microservice principles
+  - Lightweight protocol between services - HTTP REST, Event bus
+  - Small services, one job per service
+  - Independent
+  - Easier to develop and test
+  - Faster development
+  - Enables continuous delivery and deployment
+
+------------------------------------------------------------------------
 What is a micro frontend?
 
-- Decomposing frontend monoliths into smaller, simpler chunks that can be developed, tested and deployed independently, while still appearing to customers as a single cohesive product. We call this technique micro frontends.
+  - A microservice approach to the modern web 
+
+
+  - Decomposing frontend monoliths into smaller, simpler chunks that can be developed, tested and deployed independently, while still appearing to customers as a single cohesive product. We call this technique micro frontends.
 
 ------------------------------------------------------------------------
 Benefits
 
-Some of the key benefits that we've seen from micro frontends are:
+  - Some of the key benefits that we've seen from micro frontends are:
+    - smaller, more cohesive and maintainable codebases
+    - more scalable organisations with decoupled, autonomous teams
+    - the ability to upgrade, update, or even rewrite parts of the frontend in a more incremental fashion than was previously possible
 
-- smaller, more cohesive and maintainable codebases
-- more scalable organisations with decoupled, autonomous teams
-- the ability to upgrade, update, or even rewrite parts of the frontend in a more incremental fashion than was previously possible
+How does it help?
+  - Use new frontend framework on the old architecture
+  - No more shared codebases and conflicts
+  - Independent deployments
+  - Each team can pick their own stack
+  - You can easily scale your frontend app
 
+How to split apps?
+  - By functionality on the page
+  - By page
+  - By section
+  
+------------------------------------------------------------------------
+Implementation
+  - External app bootstrapping
+  - IFrames
+  - Single-spa
+  - Frint framework
+  
+------------------------------------------------------------------------
+External App Bootstrapping
+  - Code lives on different server
+  - Independent deployment
+  - Communication is done through
+    - Window object
+    - Event bus
+    
+  - Event bus - Eev
+    - https://github.com/chrisdavis/eev
+    - Less than 500 bytes minified + zipped
+    - Really fast
+    - Zero dependencies
+    - Simple to use
+
+------------------------------------------------------------------------
+IFrames
+  - Code lives on different server
+  - Independent deployment
+  - Communication is done through browser 'Event bus'
+    - window.postMessage('data', 'source');
+    - window.addEventListener('message', (event) => {
+        
+        // event.origin;
+        // event.source;
+        // event.data;
+    
+      });
+      
+------------------------------------------------------------------------
+single-spa library
+  - https://single-spa.js.org/docs/getting-started-overview
+  - Use multiple frameworks on the same page without refreshing the page
+  - Write code using a new framework, without rewriting your existing app
+  - Lazy load code for improved initial load time
+  
+  - Code lives on the same server
+  - Everything is bundled and deployed at the same time
+  - Communication is done through:
+    - Window object
+    - Event bus
+    - Shared state (for e.g. Redux)
+
+------------------------------------------------------------------------
+Frint
+  - https://frint.js.org/docs
+  - CLI
+  - Routing
+  - State management
+  - Server-side rendering supported
+  - Supports Reactive programming (RxJs)
+  - Works with React Native
+  
+------------------------------------------------------------------------
+Micro Frontend Cons
+  - More code and dependencies to maintain
+  - Big bundles
+  - Performance - a lot of code in the browser
+
+------------------------------------------------------------------------
+Who is using Micro Frontends?
+  - Google
+    - Gmail and Hangouts
+    
+  - Microsoft
+  
+  - Facebook
+  
+  - DAZN
+  
+  - Zalando
+
+------------------------------------------------------------------------
+Conclusion
+  - Do not use this if you have a simple app
+  - Use micro frontends to make things easier, not complicated
+  - Micro frontend architecture does not mean to use every framework in the world
+  - Do not forget to make standards across micro apps

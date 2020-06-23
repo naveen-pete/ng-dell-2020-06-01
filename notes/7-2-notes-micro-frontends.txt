@@ -1,0 +1,87 @@
+Micro Frontends
+---------------
+
+Micro Frontends
+  - Microservices in the browser
+  - Microservice - Collection of independent parts that make up a larger system
+  - Think about a web app as a composition of features which can potentially be 
+      - owned by independent teams
+      - of different framework
+  - Micro frontend can have its own 
+      - git repo
+      - build process
+      - tooling
+      - webpack config
+      - package.json
+      - separate application
+      
+------------------------------------------------------------------------------------
+What is single-spa?
+
+  - A framework for bringing together multiple JS micro frontend apps in a single frontend app
+  - An npm package that controls the mounting and unmounting of micro frontends
+  - A top level router when a certain route is active it will download and execute the code for that route
+  
+------------------------------------------------------------------------------------
+Benefits
+
+  - Multiple frameworks on the same page
+  - Deploy your micro frontends independently
+  - Write code using a new framework, without rewriting your existing app
+  - Lazy load for improved initial load time
+  
+------------------------------------------------------------------------------------
+Elements of single-spa
+
+  - single-spa config (root config)
+    - root html file
+    - JavaScript to register apps
+  - Applications
+  
+------------------------------------------------------------------------------------
+single-spa Root Config
+
+  - Must register apps with single-spa
+  - Each app is registered with:
+    - a name
+    - a function to load the app
+    - a function that determines when the app is active
+  - start() mounts apps
+
+------------------------------------------------------------------------------------
+single-spa Applications
+
+  - Each app must implement the following API:
+    - bootstrap()
+    - mount()
+    - unmount()
+    
+------------------------------------------------------------------------------------
+single-spa Micro Frontends
+
+  - 3 kinds of micro frontends in single-spa:
+    - Application - a chunk of UI rendered for a set of routes
+    - Parcel - a chunk of UI manually rendered by an app
+    - Utility module - shared common JS logic, no rendering
+    
+  - 1:1 relationship between a micro frontend and an in-browser JS module
+  
+------------------------------------------------------------------------------------
+Build-time vs In-browser Modules
+
+  - Build-time modules - your transpiler will compile away the 'import' statement
+  - In-browser modules - 'import' is retained and the dependency is resolved in the browser
+  
+------------------------------------------------------------------------------------
+Import Maps
+
+  - Allow you to define a URL for a module by name
+  - Defined in script element in your HTML file
+  - Advantages:
+    - Each app can be independently developed and deployed
+    - Common libraries are easily managed and can be preloaded
+    - Lazy loading is easy
+    - Easily share common code
+    - Better developer experience
+
+
