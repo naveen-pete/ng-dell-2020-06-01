@@ -83,5 +83,3 @@ Import Maps
     - Lazy loading is easy
     - Easily share common code
     - Better developer experience
-
-

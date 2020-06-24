@@ -181,6 +181,16 @@ Links
     
   - Build Micro Front-Ends Using Angular Elements: The Beginner's Guide
     - https://dzone.com/articles/build-micro-front-ends-using-angular-elements-the
+    
+  - YouTube Videos
+    - Micro Frontends: Composing web apps with Angular and Single-Spa
+      - https://youtu.be/GALSD2U7HOI
+      
+    - Microfrontends with single-spa
+      - https://youtu.be/5Gqxs_o97tE
+      
+    - Micro-frontends: A microservice approach to the modern web - Ivan Jovanovic, NearForm
+      - https://youtu.be/ftBc8w-lwmY
 
 ------------------------------------------------------------
   - HTML5
