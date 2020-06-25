@@ -1,0 +1,24 @@
+<h2>User Detail</h2>
+<div *ngIf="user">
+  <div class="card" style="width: 18rem;">
+    <img [src]="user.avatar" class="card-img-top" [alt]="user.lastName" />
+    <div class="card-body">
+      <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
+      <div class="card-text">
+        <strong>Email: </strong><a href="{{ 'mailto:' + user.email }}">{{ user.email }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <a routerLink="/users">Back to Users Index</a>
+  </div>
+
+  <div class="mt-3">
+    <em>{{ singleSpaProps.name }} using Angular</em>
+  </div>
+</div>
+
+<div class="spinner-border" role="status" *ngIf="!user">
+  <span class="sr-only">Loading...</span>
+</div>
